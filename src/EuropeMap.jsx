@@ -52,6 +52,7 @@ const EuropeMap = () => {
       setFavoriteDeputies([...favoriteDeputies, deputy]); // Ajouter à la liste
     }
   };
+
   const MapReference = () => {
     const map = useMap();
     useEffect(() => {
@@ -59,6 +60,7 @@ const EuropeMap = () => {
     }, [map]);
     return null;
   };
+
   // Supprimer un député des favoris
   const removeFromFavorites = (deputy) => {
     setFavoriteDeputies(favoriteDeputies.filter(fav => fav.id !== deputy.id)); // Retirer de la liste
@@ -90,50 +92,33 @@ const EuropeMap = () => {
     }
   }, []);
 
-  // Charger les députés à partir de l'API
+  // Charger les députés à partir des données de Google Sheets
   useEffect(() => {
     if (sheetData.length === 0) return;
 
     setLoading(true);
     setError(null);
 
-    const params = new URLSearchParams({
-      "country-of-representation": countryCode || "", // Filtrer par pays, ou tout inclure si aucun pays sélectionné
-      format: "application/ld+json", // Demander une réponse en JSON-LD
-    });
+    const deputiesFromSheet = sheetData.map((deputy) => ({
+      id: deputy.mep_identifier,
+      givenName: deputy.mep_given_name,
+      familyName: deputy.mep_family_name,
+      mep_political_group_acro: deputy.mep_political_group_acro,
+      mep_place_of_birth_x: deputy.mep_place_of_birth_x,
+      mep_place_of_birth_y: deputy.mep_place_of_birth_y,
+      mep_birthday: deputy.mep_birthday,
+      mep_email: deputy.mep_email,
+      mep_image: deputy.mep_image,
+      mep_homepage: deputy.mep_homepage,
+      mep_twitter: deputy.mep_twitter,
+      mep_facebook_page: deputy.mep_facebook_page,
+      mep_instagram: deputy.mep_instagram,
+      mep_country_of_representation: deputy.mep_country_of_representation,
+    }));
 
-    fetch(`/api/api/v2/meps/show-current?${params}`, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data.data) {
-          const deputiesFromAPI = data.data;
-
-          // Enrichir les députés uniquement si sheetData est disponible
-          const enrichedDeputies = deputiesFromAPI.map((deputy) => {
-            const sheetDeputy = sheetData.find((sheetDeputy) =>
-              String(sheetDeputy.mep_identifier).trim() === String(deputy.id.split("/")[1]).trim()
-            );
-            if (sheetDeputy) {
-              return {
-                ...deputy, // Les données de l'API
-                ...sheetDeputy, // Les données du Google Sheet
-              };
-            }
-            return deputy; // Si pas de correspondance, on garde juste les données de l'API
-          });
-
-          setDeputies(enrichedDeputies); // Stocker les députés enrichis
-        }
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Erreur lors de la récupération des députés :", error);
-        setError("Erreur de récupération des députés.");
-        setLoading(false);
-      });
-  }, [sheetData, countryCode]);
+    setDeputies(deputiesFromSheet); // Stocker les députés enrichis
+    setLoading(false);
+  }, [sheetData]);
 
   // Fonction pour zoomer sur un pays
   const zoomToCountry = useCallback((lat, lng, zoomLevel = 6) => {
@@ -148,21 +133,20 @@ const EuropeMap = () => {
       layer.bindPopup(`<strong>${feature.properties.name}</strong>`);
       layer.on("click", () => {
         const selectedCountryCode = feature.properties.iso_a2; // ISO 3166-1 alpha-2 code
-        const lat = feature.properties.lat; // Assure-toi que ton GeoJSON contient les coordonnées lat et lng
+        const lat = feature.properties.lat; // Assurez-vous que votre GeoJSON contient les coordonnées lat et lng
         const lng = feature.properties.lng;
-  
+
         if (lat !== undefined && lng !== undefined) {
           setCountryCode(selectedCountryCode); // Mettre à jour le code pays sélectionné
           zoomToCountry(lat, lng);
           setDrawerOpen(true); // Ouvrir le premier drawer
-  
+
           // Zoomer sur le pays
-          
+
         } else {
           console.error('Les coordonnées du pays sont manquantes ou incorrectes.');
         }
       });
-          // Ajouter les gestionnaires d'événements pour le survol
       // Ajouter les gestionnaires d'événements pour le survol
       layer.on({
         mouseover: () => {
@@ -210,7 +194,7 @@ const EuropeMap = () => {
     return filteredDeputies.map((deputy, index) => {
       const lat = parseFloat(deputy.mep_place_of_birth_x);
       const lng = parseFloat(deputy.mep_place_of_birth_y);
-      const party = deputy.mep_political_group || "Vides"; // Utiliser le bon champ ici, avec valeur par défaut "Vides" si non spécifié.
+      const party = deputy.mep_political_group_acro || "Vides"; // Utiliser le bon champ ici, avec valeur par défaut "Vides" si non spécifié.
 
       // Obtenir la couleur correspondant au groupe politique
       const markerColor = getPartyColor(party);
@@ -268,6 +252,7 @@ const EuropeMap = () => {
     }
     return deputiesCache;
   };
+
   const geoJsonStyle = {
     fillColor: "#003399",
     color: "#003399", // Couleur des contours
@@ -311,13 +296,14 @@ const EuropeMap = () => {
 
   const groupedDeputies = useMemo(() => {
     if (!deputies || deputies.length === 0) return {};
-  
-    return countryCode
-      ? groupDeputiesByPoliticalGroup(deputies.filter(deputy => deputy["api:country-of-representation"] === countryCode))
-      : groupDeputiesByPoliticalGroup(deputies);
+
+    const filteredDeputies = countryCode
+      ? deputies.filter(deputy => deputy.mep_country_of_representation === countryCode)
+      : deputies;
+
+    return groupDeputiesByPoliticalGroup(filteredDeputies);
   }, [deputies, countryCode]);
-  
-  
+
   return (
     <div>
       <Box sx={{ padding: 2 }}>
