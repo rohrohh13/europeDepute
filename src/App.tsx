@@ -1,4 +1,4 @@
-import EuropeMap from './EuropeMap.tsx'; 
+import EuropeMap from './EuropeMap'; 
 
 function App() {
   return (
@@ -9,4 +9,3 @@ function App() {
 }
 
 export default App;
-
