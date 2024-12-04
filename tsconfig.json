@@ -5,7 +5,7 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "allowJs": true,
-    "jsx": "react-jsx"
+    "allowJs": true,  // Permet à TypeScript de gérer les fichiers JavaScript
+    "jsx": "react-jsx" // Assure que TypeScript interprète le JSX correctement
   }
 }

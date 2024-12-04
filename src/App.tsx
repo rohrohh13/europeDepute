@@ -1,4 +1,4 @@
-import EuropeMap from "./EuropeMap";
+import EuropeMap from './EuropeMap.tsx'; 
 
 function App() {
   return (
