@@ -256,18 +256,18 @@ const EuropeMap = () => {
   let deputiesCache = null;
 
   const groupDeputiesByPoliticalGroup = (deputies) => {
-      if (!deputiesCache) {
-          deputiesCache = deputies.reduce((acc, deputy) => {
-              if (!acc[deputy["api:political-group"]]) {
-                  acc[deputy["api:political-group"]] = [];
-              }
-              acc[deputy["api:political-group"]].push(deputy);
-              return acc;
-          }, {});
-      }
-      return deputiesCache;
+    if (!deputiesCache) {
+      deputiesCache = deputies.reduce((acc, deputy) => {
+        const group = deputy.mep_political_group_acro || "Vides";
+        if (!acc[group]) {
+          acc[group] = [];
+        }
+        acc[group].push(deputy);
+        return acc;
+      }, {});
+    }
+    return deputiesCache;
   };
-
   const geoJsonStyle = {
     fillColor: "#003399",
     color: "#003399", // Couleur des contours
@@ -316,6 +316,7 @@ const EuropeMap = () => {
       ? groupDeputiesByPoliticalGroup(deputies.filter(deputy => deputy["api:country-of-representation"] === countryCode))
       : groupDeputiesByPoliticalGroup(deputies);
   }, [deputies, countryCode]);
+  
   
   return (
     <div>
@@ -487,10 +488,10 @@ const EuropeMap = () => {
 
               {/* Informations générales */}
               <Typography sx={{ marginBottom: 1, fontSize: "16px", color: "#333" }}>
-                <strong>Groupe Politique :</strong> {selectedDeputy["api:political-group"] || "Non spécifié"}
+                <strong>Groupe Politique :</strong> {selectedDeputy.mep_political_group_acro || "Non spécifié"}
               </Typography>
               <Typography sx={{ marginBottom: 1, fontSize: "16px", color: "#333" }}>
-                <strong>Pays de Représentation :</strong> {selectedDeputy["api:country-of-representation"]}
+                <strong>Pays de Représentation :</strong> {selectedDeputy.mep_country_of_representation}
               </Typography>
               <Typography sx={{ marginBottom: 1, fontSize: "16px", color: "#333" }}>
                 <strong>Âge :</strong> {selectedDeputy.mep_birthday ? calculateAge(selectedDeputy.mep_birthday) : "Non spécifié"}
