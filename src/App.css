@@ -1,0 +1,77 @@
+/* app.css */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%; /* S'assurer que le corps et le html occupent toute la hauteur */
+  width: 100%;  /* S'assurer que le corps et le html occupent toute la largeur */
+}
+
+#root {
+  height: 100%; /* Le conteneur de React doit occuper toute la hauteur */
+  width: 100%;  /* Le conteneur de React doit occuper toute la largeur */
+}
+
+.map-container {
+  height: 100vh; /* Vue complète de l'écran */
+  width: 100%;   /* 100% de la largeur disponible */
+}
+
+/* Style général de la modale */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.popup-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Contenu de la popup */
+.popup-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  overflow-y: auto;
+  transition: transform 0.5s ease;
+}
+
+.popup-content h2 {
+  margin-top: 0;
+}
+
+.popup-close {
+  background-color: #ff6347;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Effet d'apparition */
+.popup-overlay.show .popup-content {
+  transform: translateY(0);
+}
+
+.popup-overlay .popup-content {
+  transform: translateY(-50px);
+}
+

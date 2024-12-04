@@ -1,0 +1,10 @@
+/* app.css */
+
+  
+  .map-container {
+    height: 100vh; /* Vue complète de l'écran */
+    width: 100vw; /* 100% de la largeur de l'écran */
+  }
+  /* Style général de la modale */
+
+  
