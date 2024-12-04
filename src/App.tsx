@@ -1,4 +1,3 @@
-import React from "react";
 import EuropeMap from "./EuropeMap";
 
 function App() {
