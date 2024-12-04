@@ -91,7 +91,49 @@ const EuropeMap = () => {
   }, []);
 
   // Charger les députés à partir de l'API
+  useEffect(() => {
+    if (sheetData.length === 0) return;
 
+    setLoading(true);
+    setError(null);
+
+    const params = new URLSearchParams({
+      "country-of-representation": countryCode || "", // Filtrer par pays, ou tout inclure si aucun pays sélectionné
+      format: "application/ld+json", // Demander une réponse en JSON-LD
+    });
+
+    fetch(`/api/api/v2/meps/show-current?${params}`, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.data) {
+          const deputiesFromAPI = data.data;
+
+          // Enrichir les députés uniquement si sheetData est disponible
+          const enrichedDeputies = deputiesFromAPI.map((deputy) => {
+            const sheetDeputy = sheetData.find((sheetDeputy) =>
+              String(sheetDeputy.mep_identifier).trim() === String(deputy.id.split("/")[1]).trim()
+            );
+            if (sheetDeputy) {
+              return {
+                ...deputy, // Les données de l'API
+                ...sheetDeputy, // Les données du Google Sheet
+              };
+            }
+            return deputy; // Si pas de correspondance, on garde juste les données de l'API
+          });
+
+          setDeputies(enrichedDeputies); // Stocker les députés enrichis
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la récupération des députés :", error);
+        setError("Erreur de récupération des députés.");
+        setLoading(false);
+      });
+  }, [sheetData, countryCode]);
 
   // Fonction pour zoomer sur un pays
   const zoomToCountry = useCallback((lat, lng, zoomLevel = 6) => {
