@@ -8,6 +8,8 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import CloseIcon from '@mui/icons-material/Close';
 import MailIcon from "@mui/icons-material/Mail";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import './EuropeMap.css';
 
 const EuropeMap = () => {
@@ -331,16 +333,7 @@ const EuropeMap = () => {
   };
   return (
     <div>
-      <Box sx={{ padding: 2, display:'none' }}>
-        <label>
-          <input
-            type="checkbox"
-            checked={showDeputies}
-            onChange={() => setShowDeputies(!showDeputies)} // Inverse l'état de la case à cocher
-          />
-          Afficher les députés
-        </label>
-      </Box>
+
       {/* Carte */}
       <MapContainer
         className="map-container"
@@ -630,9 +623,26 @@ const EuropeMap = () => {
         </div>
       </Drawer>
 
-      <IconButton className="buttonFavorite" onClick={() => setFavoriteDrawerOpen(true)} style={{ position: "fixed", top: "16px", right: "28px", zIndex:1000,background:"#fff",borderRadius:'8px',color:'#9747FF',}}>
+      <IconButton className="buttonFavorite" onClick={() => setFavoriteDrawerOpen(true)} style={{ position: "fixed", top: "16px", right: "28px", zIndex:1000,background:"#fff",borderRadius:'8px',color:'#9747FF'}}>
         <BookmarkIcon/>
       </IconButton>
+      <Box sx={{ position: "fixed", top: "16px", right: "80px", zIndex:1000,background:"#fff",borderRadius:'8px',color:'#9747FF',padding: '8px', }}>
+        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            checked={showDeputies}
+            onChange={() => setShowDeputies(!showDeputies)} // Inverse l'état de la case à cocher
+            style={{ display: 'none' }} // Cache l'input pour un rendu plus propre
+          />
+          {showDeputies ? (
+            <VisibilityIcon sx={{ color: "rgb(151, 71, 255)" }} />
+          ) : (
+            <VisibilityOffIcon sx={{ color: "gray" }} />
+          )}
+        </label>
+      </Box>
+
+
     </div>
   );
 };
