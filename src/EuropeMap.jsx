@@ -350,7 +350,11 @@ const EuropeMap = () => {
         />
         {geoData && <GeoJSON data={geoData} onEachFeature={onEachFeature} style={geoJsonStyle} />}
 
-        <MarkerClusterGroup>{renderDeputyMarkers()}</MarkerClusterGroup>
+        <MarkerClusterGroup
+          showCoverageOnHover={false} // Désactiver le polygone autour du cluster
+        >
+        {renderDeputyMarkers()}
+        </MarkerClusterGroup>
         <MapReference />
       </MapContainer>
       <div className="footer">
