@@ -581,11 +581,14 @@ const EuropeMap = () => {
               color="inherit"
               aria-label="close"
               onClick={() => setFavoriteDrawerOpen(false)}
-              sx={{ position: 'absolute', right: 20, top: 20, color:'#fff', zIndex:'999' }}
+              sx={{ position: 'absolute', right: 20, top: 12, zIndex:'999', color:'#ffffff' }}
             >
               <CloseIcon />
             </IconButton>
-            <Typography variant="h6">Mes favoris</Typography>
+            <div className="headerDrawerFavori">
+              <BookmarkIcon sx={{ color:'#ffffff' }} />
+              <p>Favoris</p>
+            </div>
             {favoriteDeputies.length === 0 ? (
               <Typography>Aucun favori sélectionné.</Typography>
             ) : (
