@@ -318,7 +318,7 @@ const EuropeMap = () => {
     const femaleDeputies = Object.values(groupedDeputies).flat().filter(deputy => deputy.mep_gender === 'féminin').length;
     console.log('Total deputies:', totalDeputies);
     console.log('Female deputies:', femaleDeputies);
-    return totalDeputies > 0 ? ((femaleDeputies / totalDeputies) * 100).toFixed(2) : 0;
+    return totalDeputies > 0 ? ((femaleDeputies / totalDeputies) * 100).toFixed(0) : 0;
   };
 
   const calculateAverageAgeForCountry = (deputies, countryCode) => {
@@ -327,7 +327,7 @@ const EuropeMap = () => {
       const age = calculateAge(deputy.mep_birthday);
       return sum + age;
     }, 0);
-    return filteredDeputies.length > 0 ? (totalAge / filteredDeputies.length).toFixed(2) : 0;
+    return filteredDeputies.length > 0 ? (totalAge / filteredDeputies.length).toFixed(0) : 0;
   };
   return (
     <div>
