@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { MapContainer, TileLayer, GeoJSON, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { Star as StarIcon, Refresh as RefreshIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Language as LanguageIcon, Twitter as TwitterIcon, Facebook as FacebookIcon, Instagram as InstagramIcon } from '@mui/icons-material';
+import { Star as StarIcon, Refresh as RefreshIcon, ChevronRight as ChevronRightIcon, Language as LanguageIcon, Twitter as TwitterIcon, Facebook as FacebookIcon, Instagram as InstagramIcon } from '@mui/icons-material';
 import { IconButton, Drawer, Box, Typography, Button } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-
+import CloseIcon from '@mui/icons-material/Close';
+import MailIcon from "@mui/icons-material/Mail";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import './EuropeMap.css';
 
 const EuropeMap = () => {
@@ -103,9 +105,12 @@ const EuropeMap = () => {
       id: deputy.mep_identifier,
       givenName: deputy.mep_given_name,
       familyName: deputy.mep_family_name,
+      mep_political_group: deputy.mep_political_group,
       mep_political_group_acro: deputy.mep_political_group_acro,
+      mep_place_of_birth: deputy.mep_place_of_birth,
       mep_place_of_birth_x: deputy.mep_place_of_birth_x,
       mep_place_of_birth_y: deputy.mep_place_of_birth_y,
+      mep_email_without: deputy.mep_email_without,
       mep_birthday: deputy.mep_birthday,
       mep_email: deputy.mep_email,
       mep_image: deputy.mep_image,
@@ -114,6 +119,8 @@ const EuropeMap = () => {
       mep_facebook_page: deputy.mep_facebook_page,
       mep_instagram: deputy.mep_instagram,
       mep_country_of_representation: deputy.mep_country_of_representation,
+      mep_citizenship: deputy.mep_citizenship,
+      mep_gender: deputy.mep_gender,
     }));
 
     setDeputies(deputiesFromSheet); // Stocker les députés enrichis
@@ -194,7 +201,7 @@ const EuropeMap = () => {
     return filteredDeputies.map((deputy, index) => {
       const lat = parseFloat(deputy.mep_place_of_birth_x);
       const lng = parseFloat(deputy.mep_place_of_birth_y);
-      const party = deputy.mep_political_group_acro || "Vides"; // Utiliser le bon champ ici, avec valeur par défaut "Vides" si non spécifié.
+      const party = deputy.mep_political_group || "Vides"; // Utiliser le bon champ ici, avec valeur par défaut "Vides" si non spécifié.
 
       // Obtenir la couleur correspondant au groupe politique
       const markerColor = getPartyColor(party);
@@ -265,34 +272,35 @@ const EuropeMap = () => {
   };
 
   const countryNames = {
-    AT: "autrichiens",   // Autriche
-    BE: "belges",        // Belgique
-    BG: "bulgares",      // Bulgarie
-    HR: "croates",       // Croatie
-    CY: "chypriotes",    // Chypre
-    CZ: "tchèques",      // République tchèque
-    DK: "danois",        // Danemark
-    EE: "estonien",      // Estonie
-    FI: "finlandais",    // Finlande
-    FR: "français",      // France
-    DE: "allemands",     // Allemagne
-    GR: "grecs",         // Grèce
-    HU: "hongrois",      // Hongrie
-    IE: "irlandais",     // Irlande
-    IT: "italiens",      // Italie
-    LV: "lettons",       // Lettonie
-    LT: "lituaniens",    // Lituanie
-    LU: "luxembourgeois",// Luxembourg
-    MT: "maltais",       // Malte
-    NL: "néerlandais",   // Pays-Bas
-    PL: "polonais",      // Pologne
-    PT: "portugais",     // Portugal
-    RO: "roumains",      // Roumanie
-    SK: "slovaques",     // Slovaquie
-    SI: "slovènes",      // Slovénie
-    ES: "espagnols",     // Espagne
-    SE: "suédois",       // Suède
+    AT: "Autriche",   // Autriche
+    BE: "Belgique",        // Belgique
+    BG: "Bulgarie",      // Bulgarie
+    HR: "Croatie",       // Croatie
+    CY: "Chypre",    // Chypre
+    CZ: "Tchéquie",      // République tchèque
+    DK: "Danemark",        // Danemark
+    EE: "Estonie",      // Estonie
+    FI: "Finlande",    // Finlande
+    FR: "France",      // France
+    DE: "Allemagne",     // Allemagne
+    GR: "Grèce",         // Grèce
+    HU: "Hongrie",      // Hongrie
+    IE: "Irlande",     // Irlande
+    IT: "Italie",      // Italie
+    LV: "Lettonie",       // Lettonie
+    LT: "Lituanie",    // Lituanie
+    LU: "Luxembourg",// Luxembourg
+    MT: "Malte",       // Malte
+    NL: "Pays-Bas",   // Pays-Bas
+    PL: "Pologne",      // Pologne
+    PT: "Portugal",     // Portugal
+    RO: "Roumanie",      // Roumanie
+    SK: "Slovaquie",     // Slovaquie
+    SI: "Slovénie",      // Slovénie
+    ES: "Espagne",     // Espagne
+    SE: "Suède",       // Suède
   };
+
 
   const groupedDeputies = useMemo(() => {
     if (!deputies || deputies.length === 0) return {};
@@ -304,9 +312,25 @@ const EuropeMap = () => {
     return groupDeputiesByPoliticalGroup(filteredDeputies);
   }, [deputies, countryCode]);
 
+  const calculateFemalePercentage = (groupedDeputies) => {
+    const totalDeputies = Object.values(groupedDeputies).reduce((sum, group) => sum + group.length, 0);
+    const femaleDeputies = Object.values(groupedDeputies).flat().filter(deputy => deputy.mep_gender === 'féminin').length;
+    console.log('Total deputies:', totalDeputies);
+    console.log('Female deputies:', femaleDeputies);
+    return totalDeputies > 0 ? ((femaleDeputies / totalDeputies) * 100).toFixed(2) : 0;
+  };
+
+  const calculateAverageAgeForCountry = (deputies, countryCode) => {
+    const filteredDeputies = deputies.filter(deputy => deputy.mep_country_of_representation === countryCode);
+    const totalAge = filteredDeputies.reduce((sum, deputy) => {
+      const age = calculateAge(deputy.mep_birthday);
+      return sum + age;
+    }, 0);
+    return filteredDeputies.length > 0 ? (totalAge / filteredDeputies.length).toFixed(2) : 0;
+  };
   return (
     <div>
-      <Box sx={{ padding: 2 }}>
+      <Box sx={{ padding: 2, display:'none' }}>
         <label>
           <input
             type="checkbox"
@@ -335,160 +359,111 @@ const EuropeMap = () => {
         <MarkerClusterGroup>{renderDeputyMarkers()}</MarkerClusterGroup>
         <MapReference />
       </MapContainer>
-
+      <div className="footer">
+        <div className="footerUn">
+          <span>Version Beta</span>
+        </div>
+        <div className="footerDeux">
+          <span>La carto</span>
+          <a href="https://datack.fr" target="_blank">
+            <img src="/logo-datack.png"/>
+          </a>
+          <span>CIBLER, trier ET RÉCUPÉRER vos contacts</span>
+        </div>
+      </div>
       {loading && <p>Chargement des députés...</p>}
       {error && <p>{error}</p>}
 
       {/* Premier Drawer : Liste des députés par groupe politique */}
       <Drawer anchor="left" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <Box sx={{ padding: 2, width: 400 }}>
-          <Typography variant="h6" style={{
-            fontSize: '22px',
-            fontWeight: 600,
-            color: '#333',
-            textAlign: 'center',
-            marginBottom: '20px',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            backgroundColor: '#f4f4f4',
-            padding: '12px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-            fontFamily: '"IBM Plex Sans", sans-serif',
-          }}>
-            Députés {countryCode ? `${countryNames[countryCode] || 'européens'}` : "européens"}
-          </Typography>
-          {Object.keys(groupedDeputies).map((group, index) => (
-            <div key={index}>
-              <Typography variant="body1" style={{
-                fontSize: '18px',
-                fontWeight: 500, // Poids de police modéré
-                color: '#4a4a4a', // Couleur plus douce et subtile
-                letterSpacing: '0.5px', // Espacement des lettres pour un effet plus léger
-                marginBottom: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between', // Pour aligner les éléments à gauche et droite
-                backgroundColor: '#f8f8f8', // Fond très léger
-                padding: '8px 12px',
-                borderRadius: '8px', // Coins arrondis pour un look plus moderne
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Ombre subtile pour plus de profondeur
-                cursor: 'default' // Empêche le curseur de changer lors du survol
-              }}
-              >
-                <strong style={{ fontSize: '20px', fontWeight: 600, color: '#1e88e5' }}>
-                  {group}
-                </strong>
-                <span style={{ fontSize: '14px', color: '#888' }}>
-                  ({groupedDeputies[group].length} députés)
-                </span>
-              </Typography>
-              <div>
-                {groupedDeputies[group].map((deputy, deputyIndex) => (
-                  <div
-                    key={deputyIndex}
-                    onClick={() => handleDeputyClick(deputy)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between', // Aligne le texte et le chevron
-                      marginBottom: '15px',
-                      padding: '10px',
-                      borderRadius: '10px',
-                      backgroundColor: '#f5f5f5',
-                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease-in-out',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.02)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <img
-                        src={deputy.mep_image || 'default-image-url.jpg'}
-                        alt={`${deputy.givenName} ${deputy.familyName}`}
-                        style={{
-                          width: '45px',
-                          height: '45px',
-                          borderRadius: '50%',
-                          objectFit: 'contain',
-                          marginRight: '15px',
-                          transition: 'transform 0.3s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.1)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                        }}
-                      />
-                      <p style={{ margin: '0', fontWeight: 'bold', fontSize: '16px', color: '#333' }}>
-                        {deputy.givenName} {deputy.familyName}
-                      </p>
+        <Box sx={{ width: 355 }}>
+          <div className="headerDerawerUn">
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="close"
+              onClick={() => setDrawerOpen(false)}
+              sx={{ position: 'absolute', right: 20, top: 20 }}
+            >
+              <CloseIcon />
+            </IconButton>
+
+
+            <h2>{countryCode ? `${countryNames[countryCode] || 'européens'}` : "européens"}</h2>
+            <p>{Object.values(groupedDeputies).reduce((sum, group) => sum + group.length, 0)} députés</p>
+            <p>Part des femmes : {calculateFemalePercentage(groupedDeputies)}%</p>
+            <p>Âge moyen des députés : {calculateAverageAgeForCountry(deputies, countryCode)} ans</p>
+          </div>
+            
+          <div className="bottomDerawerUn">
+            {Object.keys(groupedDeputies).map((group, index) => (          
+                <div key={index}>
+                    <div className="drawerUnGroupeInfo">
+                      <h3>{group}</h3>
+                      <span>({groupedDeputies[group].length} députés)</span>
                     </div>
-
-                    <ChevronRightIcon
-                      style={{
-                        fontSize: '24px', // Taille de l'icône
-                        color: '#888',
-                        transition: 'transform 0.3s ease', // Animation du chevron
-                      }}
-                    />
+                  <div>
+                    {groupedDeputies[group].map((deputy, deputyIndex) => (
+                      <div
+                        key={deputyIndex}
+                        className="drawerUnGroupeBlocDepute"
+                        onClick={() => handleDeputyClick(deputy)}
+                      >
+                        <div className="drawerUnGroupeBlocDeputeFlex">
+                          <img
+                            src={deputy.mep_image || 'default-image-url.jpg'}
+                            alt={`${deputy.givenName} ${deputy.familyName}`}
+                          />
+                          <div>
+                            <h4>{deputy.givenName} {deputy.familyName}</h4>
+                            <p>{deputy.mep_birthday ? calculateAge(deputy.mep_birthday) : "Non spécifié"} ans</p>
+                          </div>   
+                          <ChevronRightIcon
+                            style={{
+                              fontSize: '24px', // Taille de l'icône
+                              color: '#000000',
+                              transition: 'transform 0.3s ease', 
+                              width: '14px',
+                              height: '14px',
+                              position: 'absolute',
+                              right: '17px'
+                            }}
+                          />                       
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
 
-            </div>
-          ))}
+                </div>
+
+            ))}
+          </div>
         </Box>
       </Drawer>
       {/* Deuxième Drawer : Détails du député */}
       <Drawer anchor="left" open={deputyDrawerOpen} onClose={() => setDeputyDrawerOpen(false)}>
-        <Box sx={{ padding: 3, width: 400, backgroundColor: "#f9f9f9" }}>
+        <Box sx={{ width: 350, backgroundColor: "#ffffff" }}>
           {/* Bouton de fermeture avec chevron gauche */}
-          <Button
-            onClick={() => setDeputyDrawerOpen(false)}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: 3,
-              color: "#555",
-              fontWeight: "bold",
-              textTransform: "none",
-            }}
-          >
-            <ChevronLeftIcon sx={{ marginRight: 1, fontSize: 24 }} />
-            Retour
-          </Button>
-
+          <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="close"
+              onClick={() => setDeputyDrawerOpen(false)}
+              sx={{ position: 'absolute', left: 20, top: 20 }}
+            >
+              <ChevronLeftIcon />
+          </IconButton>
+          <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="close"
+              onClick={() => setDeputyDrawerOpen(false)}
+              sx={{ position: 'absolute', right: 20, top: 20 }}
+            >
+              <CloseIcon />
+          </IconButton>
           {selectedDeputy ? (
             <>
-              {/* Nom du député */}
-              <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 2 }}>
-                {selectedDeputy.givenName} {selectedDeputy.familyName}
-              </Typography>
-
-              {/* Informations générales */}
-              <Typography sx={{ marginBottom: 1, fontSize: "16px", color: "#333" }}>
-                <strong>Groupe Politique :</strong> {selectedDeputy.mep_political_group_acro || "Non spécifié"}
-              </Typography>
-              <Typography sx={{ marginBottom: 1, fontSize: "16px", color: "#333" }}>
-                <strong>Pays de Représentation :</strong> {selectedDeputy.mep_country_of_representation}
-              </Typography>
-              <Typography sx={{ marginBottom: 1, fontSize: "16px", color: "#333" }}>
-                <strong>Âge :</strong> {selectedDeputy.mep_birthday ? calculateAge(selectedDeputy.mep_birthday) : "Non spécifié"}
-              </Typography>
-              <Typography sx={{ marginBottom: 1, fontSize: "16px", color: "#333" }}>
-                <strong>Email :</strong> {selectedDeputy.mep_email || "Non disponible"}
-              </Typography>
-              <Typography sx={{ marginBottom: 2, fontSize: "16px", color: "#333" }}>
-                <strong>Lieu de naissance :</strong> {selectedDeputy.mep_place_of_birth || "Non disponible"}
-              </Typography>
-
               {/* Image */}
               {selectedDeputy.mep_image && (
                 <img
@@ -496,12 +471,18 @@ const EuropeMap = () => {
                   alt={`${selectedDeputy.givenName} ${selectedDeputy.familyName}`}
                   style={{
                     width: "100%",
-                    borderRadius: "10px",
-                    margin: "15px 0",
+                    margin: "0",
                     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                   }}
                 />
               )}
+              {/* Nom du député */}
+              <div className="headerDeputeSelect">
+                <p>{selectedDeputy.mep_citizenship}</p>
+                <h2>
+                  {selectedDeputy.givenName} {selectedDeputy.familyName}
+                </h2>
+              </div>
               <Button
                 onClick={() =>
                   favoriteDeputies.some((fav) => fav.id === selectedDeputy.id)
@@ -511,61 +492,77 @@ const EuropeMap = () => {
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 1,
-                  marginTop: 2,
-                  padding: 1,
-                  backgroundColor: "#e0f7fa",
-                  color: "#00796b",
+                  justifyContent: 'space-between',
+                  padding: '11px 20px',
+                  width: '100%',
+                  color: "#9747FF",
                   "&:hover": {
-                    backgroundColor: "#b2ebf2",
+                    backgroundColor: "rgba(28, 28, 28, 0.08)",
                   },
                 }}
               >
+                {favoriteDeputies.some((fav) => fav.id === selectedDeputy.id)
+                  ? "Retirer cette fiche des favoris"
+                  : "Ajouter cette fiche aux favoris"}
                 {favoriteDeputies.some((fav) => fav.id === selectedDeputy.id) ? (
                   <BookmarkIcon />
                 ) : (
                   <BookmarkBorderIcon />
                 )}
-                {favoriteDeputies.some((fav) => fav.id === selectedDeputy.id)
-                  ? "Retirer des favoris"
-                  : "Ajouter aux favoris"}
               </Button>
+              {/* Informations générales */}
+              <div className="lesInfosDuDepute">
+                <p>Groupe Politique <span>{selectedDeputy.mep_political_group_acro || "Non spécifié"}</span></p>
+                <p>Pays de Représentation <span>{selectedDeputy.mep_citizenship}</span></p>
+                <p>Âge <span>{selectedDeputy.mep_birthday ? calculateAge(selectedDeputy.mep_birthday) : "Non spécifié"} ans</span></p>
+                <p>Lieu de naissance <span>{selectedDeputy.mep_place_of_birth || "Non disponible"}</span></p>
+              </div>
               {/* Réseaux sociaux */}
-              {(selectedDeputy.mep_homepage || selectedDeputy.mep_twitter || selectedDeputy.mep_facebook_page || selectedDeputy.mep_instagram) && (
+              {(selectedDeputy.mep_homepage || selectedDeputy.mep_twitter || selectedDeputy.mep_facebook_page || selectedDeputy.mep_instagram || selectedDeputy.mep_email) && (
                 <>
-                  <Typography variant="h6" sx={{ marginTop: 2, marginBottom: 1, color: "#444" }}>
-                    Réseaux sociaux :
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", justifyContent: "flex-start" }}>
-                    {selectedDeputy.mep_homepage && (
-                      <a href={selectedDeputy.mep_homepage} target="_blank" rel="noopener noreferrer">
-                        <IconButton color="primary" size="large" aria-label="Site personnel">
-                          <LanguageIcon />
-                        </IconButton>
-                      </a>
+                  <div className="lesInfosDuDeputeRS">
+                    <h3>Contacter {selectedDeputy.givenName} {selectedDeputy.familyName}</h3>
+                    <Box>
+                      {selectedDeputy.mep_homepage && (
+                        <a href={selectedDeputy.mep_homepage} target="_blank" rel="noopener noreferrer">
+                          <IconButton color="#979797" size="large" aria-label="Site personnel">
+                            <LanguageIcon />
+                          </IconButton>
+                        </a>
+                      )}
+                      {selectedDeputy.mep_twitter && (
+                        <a href={selectedDeputy.mep_twitter} target="_blank" rel="noopener noreferrer">
+                          <IconButton color="#979797" size="large" aria-label="Twitter">
+                            <TwitterIcon />
+                          </IconButton>
+                        </a>
+                      )}
+                      {selectedDeputy.mep_facebook_page && (
+                        <a href={selectedDeputy.mep_facebook_page} target="_blank" rel="noopener noreferrer">
+                          <IconButton color="#979797" size="large" aria-label="Facebook">
+                            <FacebookIcon />
+                          </IconButton>
+                        </a>
+                      )}
+                      {selectedDeputy.mep_instagram && (
+                        <a href={selectedDeputy.mep_instagram} target="_blank" rel="noopener noreferrer">
+                          <IconButton color="#979797" size="large" aria-label="Instagram">
+                            <InstagramIcon />
+                          </IconButton>
+                        </a>
+                      )}
+                    </Box>
+                    {selectedDeputy.mep_email && (
+                      <div className="blocMailDepute"> 
+                        <a href={selectedDeputy.mep_email} target="_blank" rel="noopener noreferrer">
+                          <IconButton>
+                            <MailIcon />
+                          </IconButton>
+                        </a>
+                        <p>{selectedDeputy.mep_email_without}</p>
+                      </div>
                     )}
-                    {selectedDeputy.mep_twitter && (
-                      <a href={selectedDeputy.mep_twitter} target="_blank" rel="noopener noreferrer">
-                        <IconButton color="info" size="large" aria-label="Twitter">
-                          <TwitterIcon />
-                        </IconButton>
-                      </a>
-                    )}
-                    {selectedDeputy.mep_facebook_page && (
-                      <a href={selectedDeputy.mep_facebook_page} target="_blank" rel="noopener noreferrer">
-                        <IconButton color="primary" size="large" aria-label="Facebook">
-                          <FacebookIcon />
-                        </IconButton>
-                      </a>
-                    )}
-                    {selectedDeputy.mep_instagram && (
-                      <a href={selectedDeputy.mep_instagram} target="_blank" rel="noopener noreferrer">
-                        <IconButton color="secondary" size="large" aria-label="Instagram">
-                          <InstagramIcon />
-                        </IconButton>
-                      </a>
-                    )}
-                  </Box>
+                  </div>
                 </>
               )}
             </>
@@ -576,75 +573,61 @@ const EuropeMap = () => {
       </Drawer>
       {/* Drawer des favoris */}
       <Drawer anchor="right" open={favoriteDrawerOpen} onClose={() => setFavoriteDrawerOpen(false)}>
-        <Box sx={{ padding: 2, width: 400 }}>
-          <Typography variant="h6">Mes favoris</Typography>
-          {favoriteDeputies.length === 0 ? (
-            <Typography>Aucun favori sélectionné.</Typography>
-          ) : (
-            <div>
-              {favoriteDeputies.map((deputy, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleDeputyClick(deputy)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '15px',
-                    padding: '10px',
-                    borderRadius: '10px',
-                    backgroundColor: '#f5f5f5',
-                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease-in-out',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.02)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <img
-                      src={deputy.mep_image || 'default-image-url.jpg'}
-                      alt={`${deputy.givenName} ${deputy.familyName}`}
-                      style={{
-                        width: '45px',
-                        height: '45px',
-                        borderRadius: '50%',
-                        objectFit: 'contain',
-                        marginRight: '15px',
-                        transition: 'transform 0.3s ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'scale(1.1)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'scale(1)';
-                      }}
-                    />
-                    <p style={{ margin: '0', fontWeight: 'bold', fontSize: '16px', color: '#333' }}>
-                      {deputy.givenName} {deputy.familyName}
-                    </p>
-                  </div>
+        <div className="drawerTrois">
+          <Box sx={{ width: 350 }}>
+          <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="close"
+              onClick={() => setFavoriteDrawerOpen(false)}
+              sx={{ position: 'absolute', right: 20, top: 20, color:'#fff', zIndex:'999' }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h6">Mes favoris</Typography>
+            {favoriteDeputies.length === 0 ? (
+              <Typography>Aucun favori sélectionné.</Typography>
+            ) : (
+              <div className="drawerTroisFav">
+                {favoriteDeputies.map((deputy, index) => (
+                  <div
+                    key={index}
+                    className="drawerUnGroupeBlocDepute"
+                    onClick={() => handleDeputyClick(deputy)}
+                  >
+                        <div className="drawerUnGroupeBlocDeputeFlex">
+                          <img
+                            src={deputy.mep_image || 'default-image-url.jpg'}
+                            alt={`${deputy.givenName} ${deputy.familyName}`}
+                          />
+                          <div>
+                            <h4>{deputy.givenName} {deputy.familyName}</h4>
+                            <p>{deputy.mep_birthday ? calculateAge(deputy.mep_birthday) : "Non spécifié"} ans</p>
+                          </div>   
+                          <ChevronRightIcon
+                            style={{
+                              fontSize: '24px', // Taille de l'icône
+                              color: '#000000',
+                              transition: 'transform 0.3s ease', 
+                              width: '14px',
+                              height: '14px',
+                              position: 'absolute',
+                              right: '17px'
+                            }}
+                          />                       
+                        </div>
 
-                  <ChevronRightIcon
-                    style={{
-                      fontSize: '24px',
-                      color: '#888',
-                      transition: 'transform 0.3s ease',
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </Box>
+
+                  </div>
+                ))}
+              </div>
+            )}
+          </Box>
+        </div>
       </Drawer>
 
-      <IconButton onClick={() => setFavoriteDrawerOpen(true)} style={{ position: "fixed", top: "20px", right: "20px" }}>
-        <StarIcon fontSize="large" />
+      <IconButton className="buttonFavorite" onClick={() => setFavoriteDrawerOpen(true)} style={{ position: "fixed", top: "16px", right: "28px", zIndex:1000,background:"#fff",borderRadius:'8px',color:'#9747FF',}}>
+        <BookmarkIcon/>
       </IconButton>
     </div>
   );
