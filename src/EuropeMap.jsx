@@ -261,15 +261,16 @@ const EuropeMap = () => {
   };
 
   const geoJsonStyle = {
-    fillColor: "#003399",
-    color: "#003399", // Couleur des contours
+    fillColor: "#9747FF",
+    color: "#9747FF", // Couleur des contours
     weight: 1, // Épaisseur des contours
     fillOpacity: 0.2, // Opacité de remplissage
   };
   const hoverStyle = {
-    fillColor: "#FFCC00", // Couleur de remplissage au survol
-    fillOpacity: 0.3, // Opacité de remplissage au survol
+    fillColor: "#9747FF", // Couleur de remplissage au survol
+    fillOpacity: 0.4, // Opacité de remplissage au survol
   };
+  
 
   const countryNames = {
     AT: "Autriche",   // Autriche
