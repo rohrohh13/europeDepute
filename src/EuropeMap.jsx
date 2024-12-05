@@ -590,7 +590,7 @@ const EuropeMap = () => {
               <p>Favoris</p>
             </div>
             {favoriteDeputies.length === 0 ? (
-              <Typography>Aucun favori sélectionné.</Typography>
+              <p className="noFav">Aucun favori sélectionné.</p>
             ) : (
               <div className="drawerTroisFav">
                 {favoriteDeputies.map((deputy, index) => (
