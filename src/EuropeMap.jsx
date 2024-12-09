@@ -175,14 +175,13 @@ const EuropeMap = () => {
       "Groupe de l'Alliance Progressiste des Socialistes et Démocrates au Parlement européen": "#e60000", // Rouge
       "Groupe des Conservateurs et Réformistes européens": "#1d78d3", // Bleu
       "Le groupe de la gauche au Parlement européen - GUE/NGL": "#d84a38", // Orange
-      "Groupe des Verts/Alliance libre européenne": "#73a700", // Vert
+      "Groupe des Verts/Alliance libre européenne": "#00c000", // Vert
       "Groupe du Parti populaire européen (Démocrates-Chrétiens)": "#0056a0", // Bleu marine
       "Groupe Renew Europe": "#ffdc00", // Jaune
       "Groupe Patriotes pour l’Europe": "#d58e8e", // Rose
       "Non-inscrits": "#808080", // Gris
       "Groupe «L'Europe des nations souveraines» (ENS)": "#b5b5b5", // Gris clair
-      "Groupe Patriotes pour l’Europe; Non-inscrits": "#b5b5b5", // Gris clair
-      "Vides": "#a9a9a9" // Gris foncé
+      "Vides": "#C0C0C0" // Gris foncé
     };
 
     return partyColors[party] || "#a9a9a9"; // Couleur par défaut si aucun groupe n'est trouvé
@@ -627,8 +626,15 @@ const EuropeMap = () => {
         </div>
       </Drawer>
 
-      <IconButton className="buttonFavorite" onClick={() => setFavoriteDrawerOpen(true)} style={{ position: "fixed", top: "16px", right: "28px", zIndex:1000,background:"#fff",borderRadius:'8px',color:'#9747FF'}}>
-        <BookmarkIcon/>
+      <IconButton
+        className="buttonFavorite"
+        onClick={() => setFavoriteDrawerOpen(true)}
+        style={{ position: "fixed", top: "16px", right: "28px", zIndex: 1000, background: "#fff", borderRadius: '8px', color: '#9747FF' }}
+      >
+        <BookmarkIcon />
+        <span className="nombreFav">
+          {favoriteDeputies.length}
+        </span>
       </IconButton>
       <Box sx={{ position: "fixed", top: "16px", right: "80px", zIndex:1000,background:"#fff",borderRadius:'8px',color:'#9747FF',padding: '8px', }}>
         <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>

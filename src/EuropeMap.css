@@ -281,3 +281,19 @@
   line-height: 16px; /* 133.333% */
   letter-spacing: 0.4px;
 }
+
+.nombreFav {
+  position: absolute;
+  background-color: #0A0A0A;
+  color: #FFF;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal; /* 200% */
+  letter-spacing: 0.15px;
+  padding: 2px 6px;
+  right: -6px;
+  bottom: -9px;
+}
