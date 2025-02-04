@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { MapContainer, TileLayer, GeoJSON, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Star as StarIcon, Refresh as RefreshIcon, ChevronRight as ChevronRightIcon, Language as LanguageIcon, Twitter as TwitterIcon, Facebook as FacebookIcon, Instagram as InstagramIcon } from '@mui/icons-material';
-import { IconButton, Drawer, Box, Typography, Button } from "@mui/material";
+import { IconButton, Drawer, Box, Typography, Button, Slider } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import CloseIcon from '@mui/icons-material/Close';
@@ -25,6 +25,8 @@ const EuropeMap = () => {
   const [showDeputies, setShowDeputies] = useState(false);
   const [favoriteDeputies, setFavoriteDeputies] = useState([]); // Liste des favoris
   const [favoriteDrawerOpen, setFavoriteDrawerOpen] = useState(false); // Drawer pour les favoris
+  const [ageRange, setAgeRange] = useState([0, 100]); // Plage d'âge
+  const [filteredDeputiesCount, setFilteredDeputiesCount] = useState(0); // Nombre de députés filtrés
   const mapRef = useRef(null);
 
   // Charger le fichier GeoJSON des frontières européennes
@@ -132,7 +134,11 @@ const EuropeMap = () => {
   // Fonction pour zoomer sur un pays
   const zoomToCountry = useCallback((lat, lng, zoomLevel = 6) => {
     if (mapRef.current) {
-      mapRef.current.setView([lat, lng], zoomLevel, { animate: true });
+      mapRef.current.flyTo([lat, lng], zoomLevel, {
+        animate: true,
+        duration: 0.8, // Animation plus lente
+        easeLinearity: 0.2,
+      });
     }
   }, []);
 
@@ -172,15 +178,15 @@ const EuropeMap = () => {
 
   const getPartyColor = (party) => {
     const partyColors = {
-      "Groupe de l'Alliance Progressiste des Socialistes et Démocrates au Parlement européen": "#e60000", // Rouge
-      "Groupe des Conservateurs et Réformistes européens": "#1d78d3", // Bleu
-      "Le groupe de la gauche au Parlement européen - GUE/NGL": "#d84a38", // Orange
-      "Groupe des Verts/Alliance libre européenne": "#00c000", // Vert
-      "Groupe du Parti populaire européen (Démocrates-Chrétiens)": "#0056a0", // Bleu marine
-      "Groupe Renew Europe": "#ffdc00", // Jaune
-      "Groupe Patriotes pour l’Europe": "#d58e8e", // Rose
-      "Non-inscrits": "#808080", // Gris
-      "Groupe «L'Europe des nations souveraines» (ENS)": "#b5b5b5", // Gris clair
+      "Groupe de l'Alliance Progressiste des Socialistes et Démocrates au Parlement européen": "#dd0000", // OK
+      "Groupe des Conservateurs et Réformistes européens": "#0054a1", // OK
+      "Le groupe de la gauche au Parlement européen - GUE/NGL": "#990000", // OK
+      "Groupe des Verts/Alliance libre européenne": "#009900", // OK
+      "Groupe du Parti populaire européen (Démocrates-Chrétiens)": "#0054a1", // OK
+      "Groupe Renew Europe": "#00a1fe", // OK
+      "Groupe Patriotes pour l’Europe": "#2F1C59", // OK
+      "Non-inscrits": "#C0C0C0", // OK
+      "Groupe «L'Europe des nations souveraines» (ENS)": "#000033", // OK
       "Vides": "#C0C0C0" // Gris foncé
     };
 
@@ -199,7 +205,13 @@ const EuropeMap = () => {
         !isNaN(deputy.mep_place_of_birth_y)
     );
 
-    return filteredDeputies.map((deputy, index) => {
+    // Filtrer les députés en fonction de la plage d'âge
+    const ageFilteredDeputies = filteredDeputies.filter((deputy) => {
+      const age = calculateAge(deputy.mep_birthday);
+      return age >= ageRange[0] && age <= ageRange[1];
+    });
+
+    return ageFilteredDeputies.map((deputy, index) => {
       const lat = parseFloat(deputy.mep_place_of_birth_x);
       const lng = parseFloat(deputy.mep_place_of_birth_y);
       const party = deputy.mep_political_group || "Vides"; // Utiliser le bon champ ici, avec valeur par défaut "Vides" si non spécifié.
@@ -216,7 +228,7 @@ const EuropeMap = () => {
             html: `<div style="background-color:${markerColor}; width: 20px; height: 20px; border-radius: 50%;"></div>`
           })}
           eventHandlers={{
-            click: () => handleDeputyClick(deputy) // Ouvre le drawer au clic sur le marqueur
+            click: () => handleDeputyClick(deputy) // Ouvrir le drawer au clic sur le marqueur
           }}
         >
           {/* Pas de Popup ici */}
@@ -271,7 +283,6 @@ const EuropeMap = () => {
     fillColor: "#9747FF", // Couleur de remplissage au survol
     fillOpacity: 0.4, // Opacité de remplissage au survol
   };
-  
 
   const countryNames = {
     AT: "Autriche",   // Autriche
@@ -303,16 +314,25 @@ const EuropeMap = () => {
     SE: "Suède",       // Suède
   };
 
+  const filteredDeputies = useMemo(() => {
+    let deputiesToFilter = deputies;
+
+    if (countryCode) {
+      deputiesToFilter = deputiesToFilter.filter(deputy => deputy.mep_country_of_representation === countryCode);
+    }
+
+    // Filtrer les députés en fonction de la plage d'âge
+    deputiesToFilter = deputiesToFilter.filter((deputy) => {
+      const age = calculateAge(deputy.mep_birthday);
+      return age >= ageRange[0] && age <= ageRange[1];
+    });
+
+    return deputiesToFilter;
+  }, [deputies, countryCode, ageRange]);
 
   const groupedDeputies = useMemo(() => {
-    if (!deputies || deputies.length === 0) return {};
-
-    const filteredDeputies = countryCode
-      ? deputies.filter(deputy => deputy.mep_country_of_representation === countryCode)
-      : deputies;
-
     return groupDeputiesByPoliticalGroup(filteredDeputies);
-  }, [deputies, countryCode]);
+  }, [filteredDeputies]);
 
   const calculateFemalePercentage = (groupedDeputies) => {
     const totalDeputies = Object.values(groupedDeputies).reduce((sum, group) => sum + group.length, 0);
@@ -330,8 +350,33 @@ const EuropeMap = () => {
     }, 0);
     return filteredDeputies.length > 0 ? (totalAge / filteredDeputies.length).toFixed(0) : 0;
   };
+
+  // Mettre à jour le nombre de députés filtrés lorsque la plage d'âge ou les députés changent
+  useEffect(() => {
+    const filteredDeputies = deputies.filter(
+      (deputy) => {
+        const age = calculateAge(deputy.mep_birthday);
+        return age >= ageRange[0] && age <= ageRange[1];
+      }
+    );
+    setFilteredDeputiesCount(filteredDeputies.length);
+  }, [ageRange, deputies]);
+
   return (
     <div>
+      {/* Filtre d'âge */}
+      <Box sx={{ position: "fixed", top: "16px", right: "140px", zIndex: 1000, background: "#fff", borderRadius: '8px', color: '#9747FF', padding: '8px' }}>
+        <Typography>Âge</Typography>
+        <Slider
+          value={ageRange}
+          onChange={(event, newValue) => setAgeRange(newValue)}
+          valueLabelDisplay="auto"
+          min={18}
+          max={100}
+          step={1}
+        />
+        <Typography>Nombre de députés : {filteredDeputiesCount}</Typography>
+      </Box>
 
       {/* Carte */}
       <MapContainer
@@ -385,15 +430,14 @@ const EuropeMap = () => {
               <CloseIcon />
             </IconButton>
 
-
             <h2>{countryCode ? `${countryNames[countryCode] || 'européens'}` : "européens"}</h2>
             <p>{Object.values(groupedDeputies).reduce((sum, group) => sum + group.length, 0)} députés</p>
             <p>Part des femmes : {calculateFemalePercentage(groupedDeputies)}%</p>
-            <p>Âge moyen des députés : {calculateAverageAgeForCountry(deputies, countryCode)} ans</p>
+            <p>Âge moyen des députés : {calculateAverageAgeForCountry(filteredDeputies, countryCode)} ans</p>
           </div>
-            
+
           <div className="bottomDerawerUn">
-            {Object.keys(groupedDeputies).map((group, index) => (          
+            {Object.keys(groupedDeputies).map((group, index) => (
                 <div key={index}>
                     <div className="drawerUnGroupeInfo">
                       <h3>{group}</h3>
@@ -414,18 +458,18 @@ const EuropeMap = () => {
                           <div>
                             <h4>{deputy.givenName} {deputy.familyName}</h4>
                             <p>{deputy.mep_birthday ? calculateAge(deputy.mep_birthday) : "Non spécifié"} ans</p>
-                          </div>   
+                          </div>
                           <ChevronRightIcon
                             style={{
                               fontSize: '24px', // Taille de l'icône
                               color: '#000000',
-                              transition: 'transform 0.3s ease', 
+                              transition: 'transform 0.3s ease',
                               width: '14px',
                               height: '14px',
                               position: 'absolute',
                               right: '17px'
                             }}
-                          />                       
+                          />
                         </div>
                       </div>
                     ))}
@@ -449,7 +493,7 @@ const EuropeMap = () => {
               sx={{ position: 'absolute', left: 20, top: 20 }}
             >
               <ChevronLeftIcon />
-          </IconButton>
+            </IconButton>
           <IconButton
               edge="start"
               color="inherit"
@@ -458,7 +502,7 @@ const EuropeMap = () => {
               sx={{ position: 'absolute', right: 20, top: 20 }}
             >
               <CloseIcon />
-          </IconButton>
+            </IconButton>
           {selectedDeputy ? (
             <>
               {/* Image */}
@@ -550,7 +594,7 @@ const EuropeMap = () => {
                       )}
                     </Box>
                     {selectedDeputy.mep_email && (
-                      <div className="blocMailDepute"> 
+                      <div className="blocMailDepute">
                         <a href={selectedDeputy.mep_email} target="_blank" rel="noopener noreferrer">
                           <IconButton>
                             <MailIcon />
@@ -603,20 +647,19 @@ const EuropeMap = () => {
                           <div>
                             <h4>{deputy.givenName} {deputy.familyName}</h4>
                             <p>{deputy.mep_birthday ? calculateAge(deputy.mep_birthday) : "Non spécifié"} ans</p>
-                          </div>   
+                          </div>
                           <ChevronRightIcon
                             style={{
                               fontSize: '24px', // Taille de l'icône
                               color: '#000000',
-                              transition: 'transform 0.3s ease', 
+                              transition: 'transform 0.3s ease',
                               width: '14px',
                               height: '14px',
                               position: 'absolute',
                               right: '17px'
                             }}
-                          />                       
+                          />
                         </div>
-
 
                   </div>
                 ))}
@@ -651,7 +694,6 @@ const EuropeMap = () => {
           )}
         </label>
       </Box>
-
 
     </div>
   );
