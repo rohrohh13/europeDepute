@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { MapContainer, TileLayer, GeoJSON, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { Star as StarIcon, Refresh as RefreshIcon, ChevronRight as ChevronRightIcon, Language as LanguageIcon, Twitter as TwitterIcon, Facebook as FacebookIcon, Instagram as InstagramIcon } from '@mui/icons-material';
+import { Star as StarIcon, ChevronRight as ChevronRightIcon, Language as LanguageIcon, Twitter as TwitterIcon, Facebook as FacebookIcon, Instagram as InstagramIcon } from '@mui/icons-material';
 import { IconButton, Drawer, Box, Typography, Button, Slider } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -49,6 +49,8 @@ const EuropeMap = () => {
   useEffect(() => {
     if (favoriteDeputies.length > 0) {
       localStorage.setItem('favoriteDeputies', JSON.stringify(favoriteDeputies));
+    } else {
+      localStorage.removeItem('favoriteDeputies');
     }
   }, [favoriteDeputies]);
 
@@ -603,7 +605,7 @@ const EuropeMap = () => {
                         <p>{selectedDeputy.mep_email_without}</p>
                       </div>
                     )}
-                  </div>
+                    </div>
                 </>
               )}
             </>
