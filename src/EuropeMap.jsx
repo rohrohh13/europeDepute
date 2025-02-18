@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { MapContainer, TileLayer, GeoJSON, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { Star as StarIcon, ChevronRight as ChevronRightIcon, Language as LanguageIcon, Twitter as TwitterIcon, Facebook as FacebookIcon, Instagram as InstagramIcon } from '@mui/icons-material';
+import { Star as StarIcon, ChevronRight as ChevronRightIcon, X as XIcon, Language as LanguageIcon, Twitter as TwitterIcon, Facebook as FacebookIcon, Instagram as InstagramIcon } from '@mui/icons-material';
 import { IconButton, Drawer, Box, Typography, Button, Slider } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -181,7 +181,7 @@ const EuropeMap = () => {
   const getPartyColor = (party) => {
     const partyColors = {
       "Groupe de l'Alliance Progressiste des Socialistes et Démocrates au Parlement européen": "#dd0000", // OK
-      "Groupe des Conservateurs et Réformistes européens": "#0054a1", // OK
+      "Groupe des Conservateurs et Réformistes européens": "#0054A5", // OK
       "Le groupe de la gauche au Parlement européen - GUE/NGL": "#990000", // OK
       "Groupe des Verts/Alliance libre européenne": "#009900", // OK
       "Groupe du Parti populaire européen (Démocrates-Chrétiens)": "#0054a1", // OK
@@ -194,6 +194,25 @@ const EuropeMap = () => {
 
     return partyColors[party] || "#a9a9a9"; // Couleur par défaut si aucun groupe n'est trouvé
   };
+
+const getPartyColorAcro = (partyAcronym) => {
+  const partyColorsAcro = {
+    "S&D": "#dd0000",
+    "ECR": "#0054a1",
+    "The Left": "#990000",
+    "Verts/ALE": "#009900",
+    "GEP": "#0054A5",
+    "Renew": "#00a1fe",
+    "PfE": "#2F1C59",
+    "NI": "#C0C0C0",
+    "ESN": "#000033",
+    "Vides": "#C0C0C0"
+  };
+
+  return partyColorsAcro[partyAcronym] || "#a9a9a9"; // Couleur par défaut si aucun groupe n'est trouvé
+};
+
+
 
   const renderDeputyMarkers = () => {
     if (!showDeputies) return null; // Si la case n'est pas cochée, ne pas afficher les marqueurs
@@ -276,13 +295,13 @@ const EuropeMap = () => {
   };
 
   const geoJsonStyle = {
-    fillColor: "#9747FF",
-    color: "#9747FF", // Couleur des contours
+    fillColor: "#DBFF3B",
+    color: "rgba(0,0,0,0.2)", // Couleur des contours
     weight: 1, // Épaisseur des contours
     fillOpacity: 0.2, // Opacité de remplissage
   };
   const hoverStyle = {
-    fillColor: "#9747FF", // Couleur de remplissage au survol
+    fillColor: "#DBFF3B", // Couleur de remplissage au survol
     fillOpacity: 0.4, // Opacité de remplissage au survol
   };
 
@@ -336,12 +355,41 @@ const EuropeMap = () => {
     return groupDeputiesByPoliticalGroup(filteredDeputies);
   }, [filteredDeputies]);
 
+
+
+
+  const calculateGroupPercentages = (groupedDeputies) => {
+    const totalDeputies = Object.values(groupedDeputies).reduce((sum, group) => sum + group.length, 0);
+    const percentages = {};
+
+    for (const [group, deputies] of Object.entries(groupedDeputies)) {
+      percentages[group] = (deputies.length / totalDeputies) * 100;
+    }
+
+    return percentages;
+  };
+
+  const groupPercentages = calculateGroupPercentages(groupedDeputies);
+
+
+
+
+
+
+
   const calculateFemalePercentage = (groupedDeputies) => {
     const totalDeputies = Object.values(groupedDeputies).reduce((sum, group) => sum + group.length, 0);
     const femaleDeputies = Object.values(groupedDeputies).flat().filter(deputy => deputy.mep_gender === 'féminin').length;
     console.log('Total deputies:', totalDeputies);
     console.log('Female deputies:', femaleDeputies);
     return totalDeputies > 0 ? ((femaleDeputies / totalDeputies) * 100).toFixed(0) : 0;
+  };
+  const calculateMalePercentage = (groupedDeputies) => {
+    const totalDeputies = Object.values(groupedDeputies).reduce((sum, group) => sum + group.length, 0);
+    const maleDeputies = Object.values(groupedDeputies).flat().filter(deputy => deputy.mep_gender === 'masculin').length;
+    console.log('Total deputies:', totalDeputies);
+    console.log('Female deputies:', maleDeputies);
+    return totalDeputies > 0 ? ((maleDeputies / totalDeputies) * 100).toFixed(0) : 0;
   };
 
   const calculateAverageAgeForCountry = (deputies, countryCode) => {
@@ -367,7 +415,7 @@ const EuropeMap = () => {
   return (
     <div>
       {/* Filtre d'âge */}
-      <Box sx={{ position: "fixed", top: "16px", right: "140px", zIndex: 1000, background: "#fff", borderRadius: '8px', color: '#9747FF', padding: '8px' }}>
+      <Box sx={{ display: "none ! important", position: "fixed", top: "16px", right: "140px", zIndex: 1000, background: "#fff", borderRadius: '8px', color: '#9747FF', padding: '8px' }}>
         <Typography>Âge</Typography>
         <Slider
           value={ageRange}
@@ -405,14 +453,13 @@ const EuropeMap = () => {
       </MapContainer>
       <div className="footer">
         <div className="footerUn">
-          <span>Version Beta</span>
-        </div>
-        <div className="footerDeux">
-          <span>La carto</span>
           <a href="https://datack.fr" target="_blank">
             <img src="/logo-datack.png"/>
           </a>
-          <span>CIBLER, trier ET RÉCUPÉRER vos contacts</span>
+          <span>MAP</span>
+        </div>
+        <div className="footerDeux">
+          <span>Cibler, trier et récupérer vos contacts</span>
         </div>
       </div>
       {loading && <p>Chargement des députés...</p>}
@@ -432,18 +479,73 @@ const EuropeMap = () => {
               <CloseIcon />
             </IconButton>
 
-            <h2>{countryCode ? `${countryNames[countryCode] || 'européens'}` : "européens"}</h2>
-            <p>{Object.values(groupedDeputies).reduce((sum, group) => sum + group.length, 0)} députés</p>
-            <p>Part des femmes : {calculateFemalePercentage(groupedDeputies)}%</p>
-            <p>Âge moyen des députés : {calculateAverageAgeForCountry(filteredDeputies, countryCode)} ans</p>
+            <h2 className="drawerListeTitle">{countryCode ? `${countryNames[countryCode] || 'européens'}` : "européens"}</h2>
+            <p className="drawerListeNumber">{Object.values(groupedDeputies).reduce((sum, group) => sum + group.length, 0)} députés</p>
+            <div className="pariteDiv">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_5024_15740)">
+                  <path d="M12.8113 17.1922C16.7913 17.1922 20.0177 13.9658 20.0177 9.98585C20.0177 6.00588 16.7913 2.77948 12.8113 2.77948C8.83138 2.77948 5.60498 6.00588 5.60498 9.98585C5.60498 13.9658 8.83138 17.1922 12.8113 17.1922Z" stroke="black" stroke-width="1.60141" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M12.8115 17.1922V24.3986" stroke="black" stroke-width="1.60141" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M8.80762 21.1957H16.8147" stroke="black" stroke-width="1.60141" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+                <defs>
+                  <clipPath id="clip0_5024_15740">
+                    <rect width="25.6226" height="25.6226" fill="white" transform="translate(0 0.377365)"/>
+                  </clipPath>
+                </defs>
+              </svg>
+              <span className="pariteDivLeft">{calculateFemalePercentage(groupedDeputies)}%</span>
+              <svg className="pariteDivright" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_5024_15745)">
+                  <path d="M10.4095 22.4198C14.3895 22.4198 17.6159 19.1934 17.6159 15.2134C17.6159 11.2335 14.3895 8.00706 10.4095 8.00706C6.42953 8.00706 3.20312 11.2335 3.20312 15.2134C3.20312 19.1934 6.42953 22.4198 10.4095 22.4198Z" stroke="black" stroke-width="1.60141" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M15.5049 10.1179L21.6193 4.00354" stroke="black" stroke-width="1.60141" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M16.8149 4.00354H21.6192V8.80778" stroke="black" stroke-width="1.60141" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+                <defs>
+                  <clipPath id="clip0_5024_15745">
+                    <rect width="25.6226" height="25.6226" fill="white"/>
+                  </clipPath>
+                </defs>
+              </svg>
+              <span>{calculateMalePercentage(groupedDeputies)}%</span>
+            </div>
+  <div className="group-bars">
+    {Object.entries(groupPercentages).map(([group, percentage], index) => (
+      <a key={index} href={`#group-${group}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
+          <div
+            style={{
+              width: `${percentage}%`,
+              height: '8px',
+              backgroundColor: getPartyColorAcro(group),
+              marginRight: '8px',
+            }}
+          />
+          <span>{group}</span>
+        </div>
+      </a>
+    ))}
+  </div>         
+            <p className="hide">Âge moyen des députés : {calculateAverageAgeForCountry(filteredDeputies, countryCode)} ans</p>
           </div>
 
           <div className="bottomDerawerUn">
             {Object.keys(groupedDeputies).map((group, index) => (
-                <div key={index}>
+                <div className="bottomDerawerUnGroupe" key={index} id={`group-${group}`}>
                     <div className="drawerUnGroupeInfo">
+
+                      <div
+                        style={{
+                          width: '8px',
+                          height: '8px',
+                          backgroundColor: getPartyColorAcro(group),
+                          marginRight: '10px',
+                          marginLeft: '12px',
+                        }}
+                      />
+
                       <h3>{group}</h3>
-                      <span>({groupedDeputies[group].length} députés)</span>
+                      <span>{groupedDeputies[group].length} députés</span>
                     </div>
                   <div>
                     {groupedDeputies[group].map((deputy, deputyIndex) => (
@@ -453,25 +555,19 @@ const EuropeMap = () => {
                         onClick={() => handleDeputyClick(deputy)}
                       >
                         <div className="drawerUnGroupeBlocDeputeFlex">
-                          <img
-                            src={deputy.mep_image || 'default-image-url.jpg'}
-                            alt={`${deputy.givenName} ${deputy.familyName}`}
-                          />
-                          <div>
-                            <h4>{deputy.givenName} {deputy.familyName}</h4>
-                            <p>{deputy.mep_birthday ? calculateAge(deputy.mep_birthday) : "Non spécifié"} ans</p>
+                          <div className="drawerUnGroupeBlocDeputeFlexDeux">
+                            <img
+                              src={deputy.mep_image || 'default-image-url.jpg'}
+                              alt={`${deputy.givenName} ${deputy.familyName}`}
+                            />
+                            <div>
+                              <h4>{deputy.givenName} {deputy.familyName}</h4>
+                              <p>{deputy.mep_gender === 'masculin' ? 'Député' : 'Députée'}</p>
+                            </div>
                           </div>
-                          <ChevronRightIcon
-                            style={{
-                              fontSize: '24px', // Taille de l'icône
-                              color: '#000000',
-                              transition: 'transform 0.3s ease',
-                              width: '14px',
-                              height: '14px',
-                              position: 'absolute',
-                              right: '17px'
-                            }}
-                          />
+                          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.625 2.8125L10.3125 7.5L5.625 12.1875" stroke="black" stroke-width="0.9375" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
                         </div>
                       </div>
                     ))}
@@ -485,7 +581,7 @@ const EuropeMap = () => {
       </Drawer>
       {/* Deuxième Drawer : Détails du député */}
       <Drawer anchor="left" open={deputyDrawerOpen} onClose={() => setDeputyDrawerOpen(false)}>
-        <Box sx={{ width: 350, backgroundColor: "#ffffff" }}>
+        <Box sx={{ width: 370, backgroundColor: "#ffffff" }}>
           {/* Bouton de fermeture avec chevron gauche */}
           <IconButton
               edge="start"
@@ -507,18 +603,6 @@ const EuropeMap = () => {
             </IconButton>
           {selectedDeputy ? (
             <>
-              {/* Image */}
-              {selectedDeputy.mep_image && (
-                <img
-                  src={selectedDeputy.mep_image}
-                  alt={`${selectedDeputy.givenName} ${selectedDeputy.familyName}`}
-                  style={{
-                    width: "100%",
-                    margin: "0",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  }}
-                />
-              )}
               {/* Nom du député */}
               <div className="headerDeputeSelect">
                 <p>{selectedDeputy.mep_citizenship}</p>
@@ -526,45 +610,83 @@ const EuropeMap = () => {
                   {selectedDeputy.givenName} {selectedDeputy.familyName}
                 </h2>
               </div>
-              <Button
-                onClick={() =>
-                  favoriteDeputies.some((fav) => fav.id === selectedDeputy.id)
-                    ? removeFromFavorites(selectedDeputy)
-                    : addToFavorites(selectedDeputy)
-                }
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: 'space-between',
-                  padding: '11px 20px',
-                  width: '100%',
-                  color: "#9747FF",
-                  "&:hover": {
-                    backgroundColor: "rgba(28, 28, 28, 0.08)",
-                  },
-                }}
-              >
-                {favoriteDeputies.some((fav) => fav.id === selectedDeputy.id)
-                  ? "Retirer cette fiche des favoris"
-                  : "Ajouter cette fiche aux favoris"}
-                {favoriteDeputies.some((fav) => fav.id === selectedDeputy.id) ? (
-                  <BookmarkIcon />
-                ) : (
-                  <BookmarkBorderIcon />
+              <div className="hederDeputeCouleur">
+                <div
+                  style={{
+                    width: '11px',
+                    height: '11px',
+                    backgroundColor: getPartyColorAcro(selectedDeputy.mep_political_group_acro), // Utilisez l'acronyme du groupe politique
+                    marginRight: '10px',
+                  }}
+                />
+                <p>{selectedDeputy.mep_gender === 'masculin' ? 'Député européen' : 'Députée européenne'}</p>
+              </div>
+              {/* Image */}
+              <div className="hederDeputeImage">
+                {selectedDeputy.mep_image && (
+                  <img
+                    src={selectedDeputy.mep_image}
+                    alt={`${selectedDeputy.givenName} ${selectedDeputy.familyName}`}
+                    style={{
+                      width: "100%",
+                      margin: "0",
+                    }}
+                  />
                 )}
-              </Button>
+
+                <Button
+                  onClick={() =>
+                    favoriteDeputies.some((fav) => fav.id === selectedDeputy.id)
+                      ? removeFromFavorites(selectedDeputy)
+                      : addToFavorites(selectedDeputy)
+                  }
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: 'space-between',
+                    padding: '11px 20px',
+                    width: '100%',
+                    fontSize:'13px',
+                    color: "#ffffff",
+                    borderRadius:"0 0 15px 15px",
+                    backgroundColor: "#000",
+                    "&:hover": {
+                      backgroundColor: "rgba(0, 0, 0, 0.8)",
+                    },
+                  }}
+                >
+                  {favoriteDeputies.some((fav) => fav.id === selectedDeputy.id)
+                    ? "Retirer cette fiche des favoris"
+                    : "Ajouter cette fiche aux favoris"}
+                  {favoriteDeputies.some((fav) => fav.id === selectedDeputy.id) ? (
+                    <BookmarkIcon />
+                  ) : (
+                    <BookmarkBorderIcon />
+                  )}
+                </Button>
+              </div>
               {/* Informations générales */}
               <div className="lesInfosDuDepute">
-                <p>Groupe Politique <span>{selectedDeputy.mep_political_group_acro || "Non spécifié"}</span></p>
-                <p>Pays de Représentation <span>{selectedDeputy.mep_citizenship}</span></p>
-                <p>Âge <span>{selectedDeputy.mep_birthday ? calculateAge(selectedDeputy.mep_birthday) : "Non spécifié"} ans</span></p>
-                <p>Lieu de naissance <span>{selectedDeputy.mep_place_of_birth || "Non disponible"}</span></p>
+                <p>Groupe Politique : <span>{selectedDeputy.mep_political_group_acro || "Non spécifié"}</span></p>
+                <p>Pays de Représentation : <span>{selectedDeputy.mep_citizenship}</span></p>
+                <p>Âge : <span>{selectedDeputy.mep_birthday ? calculateAge(selectedDeputy.mep_birthday) : "Non spécifié"} ans</span></p>
+                <p>Lieu de naissance : <span>{selectedDeputy.mep_place_of_birth || "Non disponible"}</span></p>
               </div>
               {/* Réseaux sociaux */}
               {(selectedDeputy.mep_homepage || selectedDeputy.mep_twitter || selectedDeputy.mep_facebook_page || selectedDeputy.mep_instagram || selectedDeputy.mep_email) && (
                 <>
                   <div className="lesInfosDuDeputeRS">
                     <h3>Contacter {selectedDeputy.givenName} {selectedDeputy.familyName}</h3>
+
+
+                    {selectedDeputy.mep_email && (
+                      <div className="blocMailDepute">
+                        <a href={selectedDeputy.mep_email} target="_blank" rel="noopener noreferrer">
+                          {selectedDeputy.mep_email_without}
+                        </a>
+                      </div>
+                    )}
+
                     <Box>
                       {selectedDeputy.mep_homepage && (
                         <a href={selectedDeputy.mep_homepage} target="_blank" rel="noopener noreferrer">
@@ -575,37 +697,27 @@ const EuropeMap = () => {
                       )}
                       {selectedDeputy.mep_twitter && (
                         <a href={selectedDeputy.mep_twitter} target="_blank" rel="noopener noreferrer">
-                          <IconButton color="#979797" size="large" aria-label="Twitter">
-                            <TwitterIcon />
+                          <IconButton color="#000000" size="large" aria-label="Twitter">
+                            <XIcon />
                           </IconButton>
                         </a>
                       )}
                       {selectedDeputy.mep_facebook_page && (
                         <a href={selectedDeputy.mep_facebook_page} target="_blank" rel="noopener noreferrer">
-                          <IconButton color="#979797" size="large" aria-label="Facebook">
+                          <IconButton color="#000000" size="large" aria-label="Facebook">
                             <FacebookIcon />
                           </IconButton>
                         </a>
                       )}
                       {selectedDeputy.mep_instagram && (
                         <a href={selectedDeputy.mep_instagram} target="_blank" rel="noopener noreferrer">
-                          <IconButton color="#979797" size="large" aria-label="Instagram">
+                          <IconButton color="#000000" size="large" aria-label="Instagram">
                             <InstagramIcon />
                           </IconButton>
                         </a>
                       )}
                     </Box>
-                    {selectedDeputy.mep_email && (
-                      <div className="blocMailDepute">
-                        <a href={selectedDeputy.mep_email} target="_blank" rel="noopener noreferrer">
-                          <IconButton>
-                            <MailIcon />
-                          </IconButton>
-                        </a>
-                        <p>{selectedDeputy.mep_email_without}</p>
-                      </div>
-                    )}
-                    </div>
+                  </div>
                 </>
               )}
             </>
@@ -617,18 +729,18 @@ const EuropeMap = () => {
       {/* Drawer des favoris */}
       <Drawer anchor="right" open={favoriteDrawerOpen} onClose={() => setFavoriteDrawerOpen(false)}>
         <div className="drawerTrois">
-          <Box sx={{ width: 350 }}>
+          <Box sx={{ width: 370 }}>
           <IconButton
               edge="start"
               color="inherit"
               aria-label="close"
               onClick={() => setFavoriteDrawerOpen(false)}
-              sx={{ position: 'absolute', right: 20, top: 12, zIndex:'999', color:'#ffffff' }}
+              sx={{ position: 'absolute', right: 20, top: 12, zIndex:'999', color:'#000000' }}
             >
               <CloseIcon />
             </IconButton>
             <div className="headerDrawerFavori">
-              <BookmarkIcon sx={{ color:'#ffffff' }} />
+              <BookmarkIcon sx={{ color:'#000000' }} />
               <p>Favoris</p>
             </div>
             {favoriteDeputies.length === 0 ? (
@@ -638,22 +750,18 @@ const EuropeMap = () => {
                 {favoriteDeputies.map((deputy, index) => (
                   <div
                     key={index}
-                    className="drawerUnGroupeBlocDepute"
+                    className=""
                     onClick={() => handleDeputyClick(deputy)}
                   >
-                        <div className="drawerUnGroupeBlocDeputeFlex">
-                          <img
-                            src={deputy.mep_image || 'default-image-url.jpg'}
-                            alt={`${deputy.givenName} ${deputy.familyName}`}
-                          />
+                        <div className="drawerUnGroupeBlocDeputeFlexTrois">
                           <div>
+                            <BookmarkIcon sx={{ color:'#000000' }} />
                             <h4>{deputy.givenName} {deputy.familyName}</h4>
-                            <p>{deputy.mep_birthday ? calculateAge(deputy.mep_birthday) : "Non spécifié"} ans</p>
                           </div>
                           <ChevronRightIcon
                             style={{
                               fontSize: '24px', // Taille de l'icône
-                              color: '#000000',
+                              color: '#fff',
                               transition: 'transform 0.3s ease',
                               width: '14px',
                               height: '14px',
@@ -674,14 +782,14 @@ const EuropeMap = () => {
       <IconButton
         className="buttonFavorite"
         onClick={() => setFavoriteDrawerOpen(true)}
-        style={{ position: "fixed", top: "16px", right: "28px", zIndex: 1000, background: "#fff", borderRadius: '8px', color: '#9747FF' }}
+        style={{ position: "fixed", top: "16px", right: "28px", zIndex: 1000, background: "#000000", borderRadius: '8px', color: '#fff' }}
       >
         <BookmarkIcon />
         <span className="nombreFav">
           {favoriteDeputies.length}
         </span>
       </IconButton>
-      <Box sx={{ position: "fixed", top: "16px", right: "80px", zIndex:1000,background:"#fff",borderRadius:'8px',color:'#9747FF',padding: '8px', }}>
+      <Box sx={{ display: "none ! important", position: "fixed", top: "16px", right: "80px", zIndex:1000,background:"#fff",borderRadius:'8px',color:'#9747FF',padding: '8px', }}>
         <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
           <input
             type="checkbox"

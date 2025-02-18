@@ -1,6 +1,8 @@
 /* app.css */
 
-  
+body {
+  font-family: "Inter";
+}
   .map-container {
     height: 100vh; /* Vue complète de l'écran */
     width: 100vw; /* 100% de la largeur de l'écran */
@@ -11,21 +13,25 @@
   background-color: #ffffff;
 }
 
+.hide {
+  display: none;
+}
+
 .headerDerawerUn {
   padding:40px 20px;
+  padding-bottom: 20px;
 }
 .headerDerawerUn h2 {
   margin: 0;
   color: #0A0A0A;
-  font-family: "IBM Plex Sans";
-  font-size: 24px;
+  font-family: "Inter";
+  font-size: 40px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   line-height: normal;
 }
 
 .bottomDerawerUn {
-  background: rgba(28, 28, 28, 0.06);
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom: 100px;
@@ -34,28 +40,30 @@
 .drawerUnGroupeInfo {
   display: flex;
   align-items: center;
-  padding-top: 17px;
-  padding-bottom: 17px;
+  padding-top: 8px;
+  background: #000;
+  border-radius: 10px 10px 0px 0px;
+  padding-bottom: 8px;
 }
 
 .drawerUnGroupeInfo h3 {
-  margin: 0;
-  color: #9747FF;
+  color: #FFF;
   font-size: 14px;
   font-style: normal;
-  font-weight: 500;
-  line-height: normal;
+  font-weight: 600;
+  margin: 0;
+  line-height: 120%; 
+  border-right: 1.3px solid rgba(255, 255, 255, 0.40);
   padding-right: 10px;
-  letter-spacing: 0.175px;
 }
 
 .drawerUnGroupeInfo span {
-  color: rgba(28, 28, 28, 0.40);
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 24px; /* 171.429% */
-  letter-spacing: 0.15px;
+color: #FFF;
+font-size: 10px;
+font-style: normal;
+padding-left: 10px;
+font-weight: 400;
+line-height: 120%;
 }
 
 .drawerUnGroupeBlocDepute {
@@ -70,66 +78,73 @@
   object-fit: cover;
 }
 .drawerUnGroupeBlocDepute h4 {
+  color: #000;
   margin: 0;
-  color: #0A0A0A;
-  font-size: 16px;
+  padding-bottom: 8px;
+  font-size: 18px;
   font-style: normal;
-  font-weight: 400;
-  line-height: 24px; /* 150% */
-  letter-spacing: 0.15px;
+  font-weight: 500;
+  line-height: 120%;
 }
 
 .drawerUnGroupeBlocDepute p {
+color: #000;
+leading-trim: both;
   margin: 0;
-  color: rgba(0, 0, 0, 0.60); 
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 20px; /* 142.857% */
-  letter-spacing: 0.25px;
+font-size: 10px;
+font-style: normal;
+font-weight: 400;
+line-height: 120%; 
 }
 
 .drawerUnGroupeBlocDeputeFlex {
   display: flex;
   align-items: center;
   position: relative;
+  justify-content: space-between;
+  padding-right: 9px;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
-.drawerUnGroupeBlocDeputeFlex div {
-  padding-left: 12px;
+.drawerUnGroupeBlocDeputeFlex .drawerUnGroupeBlocDeputeFlexDeux {
+  display: flex;
+}
+.drawerUnGroupeBlocDeputeFlex .drawerUnGroupeBlocDeputeFlexDeux div {
+  padding-top: 15px;
+  padding-left: 14px;
 }
 
 .lesInfosDuDepute {
-  background: rgba(28, 28, 28, 0.02);
-  border-bottom: 1px solid rgba(28, 28, 28, 0.08);
-  border-top: 1px solid rgba(28, 28, 28, 0.08);
+border-radius: 15px;
+border: 1px solid rgba(0, 0, 0, 0.08);
+margin-left: 20px;
+margin-right:20px;
   padding-top: 19px;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 26px;
+padding: 17px 20px;
+padding-bottom: 14px;
 }
 
 .lesInfosDuDepute p {
   margin: 0;
   padding-bottom: 3px;
-  color: rgba(28, 28, 28, 0.40);
+  color: #000;
   font-size: 14px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 24px; /* 171.429% */
   letter-spacing: 0.15px;
 }
 
 .lesInfosDuDepute p span {
-  color: #9747FF;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-  letter-spacing: 0.175px;
+font-weight: 400;
 }
 
+
+
+
 .lesInfosDuDeputeRS {
-  padding-top: 14px;
+  padding-top: 36px;
   padding-bottom: 80px;
   padding-left: 20px;
   padding-right: 20px;
@@ -137,25 +152,26 @@
 
 .lesInfosDuDeputeRS h3 {
   margin: 0;
-  padding-bottom: 30px;
-  color: #9747FF;
-  font-size: 14px;
+  padding-bottom: 5px;
+  margin-bottom: 22px;
+  color: #000000;
+  font-size: 16px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 16px; /* 114.286% */
-  letter-spacing: 1.25px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
 }
 
 .headerDeputeSelect {
-  padding-top: 18px;
-  padding-bottom: 18px;
+  padding-top: 75px;
+  padding-bottom: 19px;
   padding-left: 20px;
-  border-bottom: 1px solid rgba(28, 28, 28, 0.08);
   padding-right: 20px;
 }
 .headerDeputeSelect p {
   margin: 0;
-  padding-bottom: 4px;
+  padding-bottom: 19px;
   color: rgba(28, 28, 28, 0.40);
   font-size: 12px;
   font-style: normal;
@@ -166,30 +182,28 @@
 .headerDeputeSelect h2 {
   margin: 0;
   color: #1C1C1C;
-  font-size: 24px;
+  font-size: 40px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   line-height: normal;
 }
 
 .blocMailDepute {
-  display: flex;
-  align-items: center;
+  padding-bottom: 10px;
 }
 
-.blocMailDepute p {
-  margin: 0;
-  color: #1C1C1C;
-  font-size: 14px;
+
+.blocMailDepute a {
+  color: #000;
+  font-size: 12px;
   font-style: normal;
   font-weight: 400;
-  line-height: 24px; /* 171.429% */
-  letter-spacing: 0.15px;
+  line-height: 120%; /* 14.4px */
+  text-decoration: underline;
 }
 
-.blocMailDepute svg {
-  width: 18px;
-  height: 18px;
+.blocMailDepute a:hover {
+  text-decoration: none;
 }
 
 
@@ -203,8 +217,32 @@
   width: 100%;
   z-index: 9999;
 }
+
 .footerUn {
-  padding-left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.footerUn span {
+  color: #DBFF3B;
+padding-left: 10px;
+font-family: Inter;
+font-size: 19.162px;
+font-style: normal;
+font-weight: 500;
+line-height: 120%;
+}
+
+.footerUn img {
+  height: 40px;
+  transition: all 0.3s;
+}
+.footerUn img:hover {
+  opacity: 0.8;
+}
+
+.footerUn a {
+  line-height: 0;
 }
 .footerDeux {
   padding-right: 20px;
@@ -212,15 +250,8 @@
   align-items: center;
 }
 
-.footerDeux img {
-  height: 40px;
-  margin-left: 9px;
-  margin-right: 9px;
-  transition: all 0.3s;
-}
-.footerDeux img:hover {
-  opacity: 0.8;
-}
+
+
 .footerDeux span {
   color: #FFF;
   font-size: 12px;
@@ -230,21 +261,11 @@
   text-transform: uppercase;
 }
 
-.footerDeux a {
-  line-height: 0;
-}
-.footerUn span {
-  color: #9747FF;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-  text-transform: uppercase;
-}
+
 
 
 .drawerTrois {
-  background-color: #9747FF;
+  background-color: #ffffff;
   min-height: 100vh;
 }
 
@@ -264,7 +285,7 @@
   padding-left: 15px;
   padding-right: 15px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 .noFav {
   color: #ffffff;
@@ -272,12 +293,12 @@
 }
 .headerDrawerFavori p {
   margin: 0;
-  color: #FFF;
+  color: #000000;
   padding-left: 15px;
   font-size: 12px;
   padding-bottom: 10px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 16px; /* 133.333% */
   letter-spacing: 0.4px;
 }
@@ -287,6 +308,7 @@
   background-color: #0A0A0A;
   color: #FFF;
   text-align: center;
+  border:2px solid #fff;
   border-radius: 50%;
   font-size: 12px;
   font-style: normal;
@@ -294,6 +316,125 @@
   line-height: normal; /* 200% */
   letter-spacing: 0.15px;
   padding: 2px 6px;
-  right: -6px;
-  bottom: -9px;
+  right: -12px;
+  bottom: -12px;
+}
+
+
+
+.pariteDiv {
+border-radius: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+
+  padding: 10px 12px;
+}
+.pariteDiv svg {
+  padding-right: 6px;
+}
+.pariteDivright {
+  padding-left: 18px;
+}
+.pariteDivLeft {
+  padding-right: 18px;
+  border-right: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.drawerListeTitle {
+
+}
+
+
+.drawerListeNumber {
+  margin-top: 16px;
+  margin-bottom: 28px;
+  color: rgba(0, 0, 0, 0.25);
+font-size: 14px;
+font-style: normal;
+font-weight: 500;
+text-transform: uppercase;
+line-height: 120%;
+}
+
+
+
+.bottomDerawerUnGroupe {
+  border-radius: 15px 15px 0px 0px;
+  margin-bottom: 20px;
+}
+
+
+.hederDeputeCouleur {
+  display: flex;
+  align-items: center;
+  padding-bottom: 30px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+}
+
+.hederDeputeCouleur p {
+  color: #000;
+margin: 0;
+font-size: 18px;
+font-style: normal;
+font-weight: 400;
+line-height: 120%
+}
+
+
+
+.hederDeputeImage {
+  border-radius: 15px;
+margin-left: 20px;
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+border: 1px solid rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+.hederDeputeImage img {
+  border-radius: 15px 15px 0px 0px;  
+}
+
+
+.group-bars span {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+
+
+.group-bars {
+  border-radius: 15px;
+  margin-top: 10px;
+  padding: 20px;
+border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+
+
+.lesInfosDuDeputeRS svg path {
+  fill: #000000;
+}
+
+
+
+.drawerUnGroupeBlocDeputeFlexTrois div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.drawerUnGroupeBlocDeputeFlexTrois div h4 {
+  margin: 0;
+  color: #000;
+font-size: 13px;
+font-style: normal;
+padding-left: 10px;
+font-weight: 400;
+line-height: 100%;
 }
