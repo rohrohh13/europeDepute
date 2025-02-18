@@ -509,23 +509,23 @@ const getPartyColorAcro = (partyAcronym) => {
               </svg>
               <span>{calculateMalePercentage(groupedDeputies)}%</span>
             </div>
-  <div className="group-bars">
-    {Object.entries(groupPercentages).map(([group, percentage], index) => (
-      <a key={index} href={`#group-${group}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
-          <div
-            style={{
-              width: `${percentage}%`,
-              height: '8px',
-              backgroundColor: getPartyColorAcro(group),
-              marginRight: '8px',
-            }}
-          />
-          <span>{group}</span>
-        </div>
-      </a>
-    ))}
-  </div>         
+            <div className="group-bars">
+              {Object.entries(groupPercentages).map(([group, percentage], index) => (
+                <a key={index} href={`#group-${group}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
+                    <div
+                      style={{
+                        width: `${percentage}%`,
+                        height: '8px',
+                        backgroundColor: getPartyColorAcro(group),
+                        marginRight: '8px',
+                      }}
+                    />
+                    <span>{group}</span>
+                  </div>
+                </a>
+              ))}
+            </div>         
             <p className="hide">Âge moyen des députés : {calculateAverageAgeForCountry(filteredDeputies, countryCode)} ans</p>
           </div>
 
