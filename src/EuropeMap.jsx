@@ -408,18 +408,32 @@ const getPartyColorAcro = (partyAcronym) => {
   return (
     <div>
       {/* Filtre d'âge */}
-      <Box sx={{ display: "none ! important", position: "fixed", top: "16px", right: "140px", zIndex: 1000, background: "#fff", borderRadius: '8px', color: '#9747FF', padding: '8px' }}>
-        <Typography>Âge</Typography>
-        <Slider
-          value={ageRange}
-          onChange={(event, newValue) => setAgeRange(newValue)}
-          valueLabelDisplay="auto"
-          min={18}
-          max={100}
-          step={1}
-        />
-        <Typography>Nombre de députés : {filteredDeputiesCount}</Typography>
-      </Box>
+      {showDeputies && (
+        <Box sx={{ display: "none ! important",position: "fixed", top: "16px", right: "140px", zIndex: 1000, background: "#fff", borderRadius: '8px', color: 'black', padding: '8px', minWidth: '150px' }}>
+          <Typography sx={{ color: 'black' }}>Âge</Typography>
+          <Slider
+            value={ageRange}
+            onChange={(event, newValue) => setAgeRange(newValue)}
+            valueLabelDisplay="auto"
+            min={18}
+            max={100}
+            step={1}
+            sx={{
+              color: 'black',
+              '& .MuiSlider-thumb': {
+                backgroundColor: 'black',
+              },
+              '& .MuiSlider-track': {
+                backgroundColor: 'black',
+              },
+              '& .MuiSlider-rail': {
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              }
+            }}
+          />
+          <Typography sx={{ color: 'black', fontSize: '14px' }}>{filteredDeputiesCount} député·e·s</Typography>
+        </Box>
+      )}
 
       {/* Carte */}
       <MapContainer
@@ -782,7 +796,7 @@ const getPartyColorAcro = (partyAcronym) => {
           {favoriteDeputies.length}
         </span>
       </IconButton>
-      <Box sx={{ display: "none ! important", position: "fixed", top: "16px", right: "80px", zIndex:1000,background:"#fff",borderRadius:'8px',color:'#9747FF',padding: '8px', }}>
+      <Box sx={{ display: "", position: "fixed", top: "16px", right: "80px", zIndex:1000,background:"#fff",borderRadius:'8px',color:'#9747FF',padding: '8px', }}>
         <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
           <input
             type="checkbox"
@@ -791,9 +805,9 @@ const getPartyColorAcro = (partyAcronym) => {
             style={{ display: 'none' }} // Cache l'input pour un rendu plus propre
           />
           {showDeputies ? (
-            <VisibilityIcon sx={{ color: "rgb(151, 71, 255)" }} />
+            <VisibilityIcon sx={{ color: "black" }} />
           ) : (
-            <VisibilityOffIcon sx={{ color: "gray" }} />
+            <VisibilityOffIcon sx={{ color: "black" }} />
           )}
         </label>
       </Box>
