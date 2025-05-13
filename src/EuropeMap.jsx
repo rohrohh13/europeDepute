@@ -76,28 +76,21 @@ const EuropeMap = () => {
 
   // Charger les données depuis Google Sheets via OpenSheet
   useEffect(() => {
-    const cachedData = localStorage.getItem('sheetData');
-    if (cachedData) {
-      setSheetData(JSON.parse(cachedData));
-      setLoading(false);
-    } else {
-      setLoading(true);
-      const sheetId = "1EYCFXv26A4B1K_yLszsQswGTPbCzjPDa6JZQU8LuKkI"; // L'ID de ton Google Sheet
-      const sheetName = "Feuille"; // Le nom de la feuille
-      const url = `https://opensheet.elk.sh/${sheetId}/${sheetName}`;
+    setLoading(true);
+    const sheetId = "1EYCFXv26A4B1K_yLszsQswGTPbCzjPDa6JZQU8LuKkI"; // L'ID de ton Google Sheet
+    const sheetName = "Feuille"; // Le nom de la feuille
+    const url = `https://opensheet.elk.sh/${sheetId}/${sheetName}`;
 
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          setSheetData(data);
-          localStorage.setItem('sheetData', JSON.stringify(data)); // Cache dans localStorage
-          setLoading(false);
-        })
-        .catch((error) => {
-          setError("Erreur de récupération des données.");
-          setLoading(false);
-        });
-    }
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        setSheetData(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError("Erreur de récupération des données.");
+        setLoading(false);
+      });
   }, []);
 
   // Charger les députés à partir des données de Google Sheets
@@ -186,7 +179,7 @@ const EuropeMap = () => {
       "Groupe des Verts/Alliance libre européenne": "#009900", // OK
       "Groupe du Parti populaire européen (Démocrates-Chrétiens)": "#0054a1", // OK
       "Groupe Renew Europe": "#00a1fe", // OK
-      "Groupe Patriotes pour l’Europe": "#2F1C59", // OK
+      "Groupe Patriotes pour l'Europe": "#2F1C59", // OK
       "Non-inscrits": "#C0C0C0", // OK
       "Groupe «L'Europe des nations souveraines» (ENS)": "#000033", // OK
       "Vides": "#C0C0C0" // Gris foncé
