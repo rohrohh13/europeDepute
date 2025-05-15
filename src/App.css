@@ -75,3 +75,28 @@ body, html {
   transform: translateY(-50px);
 }
 
+@media all and (max-width: 992px) {
+
+.footerUn img {
+  height: 30px;
+  transition: all .3s;
+}
+.footerUn span {
+  color: #dbff3b;
+  padding-left: 6px;
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 120%;
+}
+.footerDeux span {
+  color: #fff;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: uppercase;
+}
+
+}
