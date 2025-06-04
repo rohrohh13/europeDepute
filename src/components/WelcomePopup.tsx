@@ -18,6 +18,8 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 // @ts-ignore
 import 'swiper/css/pagination';
+// @ts-ignore
+import type { Swiper as SwiperType } from 'swiper';
 
 // Styles CSS pour Swiper
 const styles = `
@@ -42,6 +44,12 @@ const styles = `
     background-repeat: no-repeat !important;
     background-position: center !important;
     background-size: contain !important;
+    cursor: pointer !important;
+  }
+  .swiper-button-disabled {
+    opacity: 0.35 !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
   }
   .swiper-button-next {
     right: 20px !important;
@@ -68,6 +76,12 @@ interface WelcomePopupProps {
 }
 
 const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+  const handleSlideChange = (swiper: SwiperType) => {
+    setCurrentSlideIndex(swiper.activeIndex);
+  };
+
   const slides = [
     {
       logo: '/logo-datack-map.png',
@@ -174,6 +188,13 @@ const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
           }}
           spaceBetween={0}
           slidesPerView={1}
+          onSlideChange={handleSlideChange}
+          onReachEnd={(swiper) => {
+            const nextButton = swiper.navigation.nextEl;
+            if (nextButton) {
+              nextButton.addEventListener('click', onClose);
+            }
+          }}
           style={{
             width: '100%',
             height: '100%',
