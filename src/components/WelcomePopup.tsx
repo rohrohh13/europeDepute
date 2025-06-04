@@ -76,12 +76,6 @@ interface WelcomePopupProps {
 }
 
 const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-
-  const handleSlideChange = (swiper: SwiperType) => {
-    setCurrentSlideIndex(swiper.activeIndex);
-  };
-
   const slides = [
     {
       logo: '/logo-datack-map.png',
@@ -188,7 +182,6 @@ const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
           }}
           spaceBetween={0}
           slidesPerView={1}
-          onSlideChange={handleSlideChange}
           onReachEnd={(swiper) => {
             const nextButton = swiper.navigation.nextEl;
             if (nextButton) {

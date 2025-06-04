@@ -513,19 +513,23 @@ line-height: 100%;
   font-weight: 500;
   line-height: 120%;
 }
-.footerDeux span {
-  color: #fff;
-  font-size: 7px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-  text-transform: uppercase;
-}
 
 .footerDeux {
-  padding-right: 10px;
-  display: flex;
-  align-items: center;
+  display: none;
 }
+.titleCarte p {
+  font-size: 18px;
+}
+.titleCarte {
+  position: absolute;
+  bottom: 15px;
+  padding: 17px 20px 22px 20px;
+  z-index: 999;
+  border-radius: 24.51px;
+  border: 1px solid #000;
+  background: #FFF;
+  left: -8px;
+}
+
 
 }
