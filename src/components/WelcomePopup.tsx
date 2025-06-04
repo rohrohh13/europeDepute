@@ -39,9 +39,33 @@ const styles = `
     height: 2px;
     border-radius: 1px;
   }
+  @media (max-width: 991px) {
+    .swiper-button-next,
+    .swiper-button-prev {
+      display: none !important;
+    }
+  }
   .swiper-button-next,
   .swiper-button-prev {
-    display: none !important;
+    width: 23px !important;
+    height: 23px !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: contain !important;
+    cursor: pointer !important;
+  }
+  .swiper-button-disabled {
+    opacity: 0.35 !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+  }
+  .swiper-button-next {
+    right: 20px !important;
+    background-image: url("data:image/svg+xml,%3Csvg width='23' height='23' viewBox='0 0 23 23' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8.625 4.3125L15.8125 11.5L8.625 18.6875' stroke='white' stroke-width='1.07813' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  }
+  .swiper-button-prev {
+    left: 20px !important;
+    background-image: url("data:image/svg+xml,%3Csvg width='23' height='23' viewBox='0 0 23 23' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M14.375 18.6875L7.1875 11.5L14.375 4.3125' stroke='white' stroke-width='1.07813' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
   }
   .swiper-button-next::after,
   .swiper-button-prev::after {
@@ -160,7 +184,7 @@ const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
       <DialogContent sx={{ p: 0, overflow: 'hidden', zIndex: 9999 }}>
         <Swiper
           modules={[Navigation, Pagination]}
-          navigation={false}
+          navigation={!isMobile}
           pagination={{ 
             clickable: true,
             renderBullet: function (_index: number, className: string) {
