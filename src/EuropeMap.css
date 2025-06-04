@@ -19,7 +19,7 @@ body {
 
 .headerDerawerUn {
   padding:40px 20px;
-  padding-bottom: 20px;
+  padding-bottom: 36px;
 }
 .headerDerawerUn h2 {
   margin: 0;
@@ -35,6 +35,19 @@ body {
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom: 100px;
+}
+
+.bottomDerawerUn h2 {
+  color: #000;
+margin: 0;
+padding-bottom: 30px;
+padding-top: 30px;
+font-family: Inter;
+font-size: 15px;
+font-style: normal;
+font-weight: 600;
+line-height: 120%; /* 18px */
+border-top:1px solid rgba(0, 0, 0, 0.08);
 }
 
 .drawerUnGroupeInfo {
@@ -245,18 +258,23 @@ line-height: 120%;
   line-height: 0;
 }
 .footerDeux {
-  padding-right: 20px;
   display: flex;
+
   align-items: center;
 }
 
-
-
 .footerDeux span {
-  color: #FFF;
+  color: #0A0A0A;
   font-size: 12px;
+    height: 40px;
   font-style: normal;
+  background: #DBFF3B;
   font-weight: 500;
+  padding-left: 30px;
+  padding-right: 30px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
   line-height: normal;
   text-transform: uppercase;
 }
@@ -325,11 +343,22 @@ line-height: 120%;
 .pariteDiv {
 border-radius: 15px;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  display: flex;
   align-items: center;
 
-  padding: 10px 12px;
+  padding: 20px;
+  padding-right: 10px;
 }
+.pariteDiv h3 {
+  color: #000;
+margin: 0;
+padding-bottom:18px;
+font-family: Inter;
+font-size: 15px;
+font-style: normal;
+font-weight: 600;
+line-height: 120%; /* 18px */
+}
+
 .pariteDiv svg {
   padding-right: 6px;
 }
@@ -413,6 +442,17 @@ border: 1px solid rgba(0, 0, 0, 0.08);
 border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+.group-bars h3 {
+  color: #000;
+margin: 0;
+padding-bottom: 18px;
+font-family: Inter;
+font-size: 15px;
+font-style: normal;
+font-weight: 600;
+line-height: 120%; /* 18px */
+}
+
 
 
 .lesInfosDuDeputeRS svg path {
@@ -438,8 +478,25 @@ padding-left: 10px;
 font-weight: 400;
 line-height: 100%;
 }
-
-
+.titleCarte {
+  position: absolute;
+  bottom: 15px;
+  padding: 32px 10px 52px 28px;
+  z-index: 999;
+  border-radius: 24.51px;
+border: 1px solid #000;
+background: #FFF;
+left: -8px;
+}
+.titleCarte p {
+  margin: 0;
+  color: #0A0A0A;
+font-family: Inter;
+font-size: 28px;
+font-style: normal;
+font-weight: 600;
+line-height: 100%;
+}
 
 @media all and (max-width: 992px) {
 

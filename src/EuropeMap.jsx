@@ -27,6 +27,7 @@ const EuropeMap = () => {
   const [favoriteDrawerOpen, setFavoriteDrawerOpen] = useState(false); // Drawer pour les favoris
   const [ageRange, setAgeRange] = useState([0, 100]); // Plage d'âge
   const [filteredDeputiesCount, setFilteredDeputiesCount] = useState(0); // Nombre de députés filtrés
+  const [openGroups, setOpenGroups] = useState({}); // Ajouter cet état avec les autres états
   const mapRef = useRef(null);
 
   // Charger le fichier GeoJSON des frontières européennes
@@ -405,6 +406,14 @@ const getPartyColorAcro = (partyAcronym) => {
     setFilteredDeputiesCount(filteredDeputies.length);
   }, [ageRange, deputies]);
 
+  // Ajouter cette fonction avec les autres fonctions
+  const toggleGroup = (group) => {
+    setOpenGroups(prev => ({
+      ...prev,
+      [group]: !prev[group]
+    }));
+  };
+
   return (
     <div>
       {/* Filtre d'âge */}
@@ -440,13 +449,19 @@ const getPartyColorAcro = (partyAcronym) => {
         className="map-container"
         center={[54, 15]} // Coordonnées centrales (Europe)
         zoom={4} // Zoom initial
+        minZoom={4} // Limite minimale de zoom
         whenCreated={(map) => {
           mapRef.current = map;
           console.log("Map reference obtained:", mapRef.current);
         }}
       >
+
+
+
+
+
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         {geoData && <GeoJSON data={geoData} onEachFeature={onEachFeature} style={geoJsonStyle} />}
@@ -458,6 +473,9 @@ const getPartyColorAcro = (partyAcronym) => {
         </MarkerClusterGroup>
         <MapReference />
       </MapContainer>
+      <div className="titleCarte">
+        <p>Cibler, trier et récupérer <br/>vos contacts</p>
+      </div>
       <div className="footer">
         <div className="footerUn">
           <a href="https://datack.fr" target="_blank">
@@ -466,7 +484,7 @@ const getPartyColorAcro = (partyAcronym) => {
           <span>MAP</span>
         </div>
         <div className="footerDeux">
-          <span>Cibler, trier et récupérer vos contacts</span>
+          <span>Contactez-nous</span>
         </div>
       </div>
       {loading && <p>Chargement des députés...</p>}
@@ -489,6 +507,7 @@ const getPartyColorAcro = (partyAcronym) => {
             <h2 className="drawerListeTitle">{countryCode ? `${countryNames[countryCode] || 'européens'}` : "européens"}</h2>
             <p className="drawerListeNumber">{Object.values(groupedDeputies).reduce((sum, group) => sum + group.length, 0)} députés</p>
             <div className="pariteDiv">
+              <h3>Proportion des députés selon le genre</h3>
               <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clip-path="url(#clip0_5024_15740)">
                   <path d="M12.8113 17.1922C16.7913 17.1922 20.0177 13.9658 20.0177 9.98585C20.0177 6.00588 16.7913 2.77948 12.8113 2.77948C8.83138 2.77948 5.60498 6.00588 5.60498 9.98585C5.60498 13.9658 8.83138 17.1922 12.8113 17.1922Z" stroke="black" stroke-width="1.60141" stroke-linecap="round" stroke-linejoin="round"/>
@@ -517,6 +536,7 @@ const getPartyColorAcro = (partyAcronym) => {
               <span>{calculateMalePercentage(groupedDeputies)}%</span>
             </div>
             <div className="group-bars">
+              <h3>Répartition (en %) des députés en fonction de leur groupe politique</h3>
               {Object.entries(groupPercentages).map(([group, percentage], index) => (
                 <a key={index} href={`#group-${group}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
@@ -537,10 +557,14 @@ const getPartyColorAcro = (partyAcronym) => {
           </div>
 
           <div className="bottomDerawerUn">
+            <h2>Liste des députés français</h2>
             {Object.keys(groupedDeputies).map((group, index) => (
                 <div className="bottomDerawerUnGroupe" key={index} id={`group-${group}`}>
-                    <div className="drawerUnGroupeInfo">
-
+                    <div 
+                      className="drawerUnGroupeInfo"
+                      onClick={() => toggleGroup(group)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <div
                         style={{
                           width: '8px',
@@ -550,37 +574,52 @@ const getPartyColorAcro = (partyAcronym) => {
                           marginLeft: '12px',
                         }}
                       />
-
                       <h3>{group}</h3>
                       <span>{groupedDeputies[group].length} députés</span>
-                    </div>
-                  <div>
-                    {groupedDeputies[group].map((deputy, deputyIndex) => (
-                      <div
-                        key={deputyIndex}
-                        className="drawerUnGroupeBlocDepute"
-                        onClick={() => handleDeputyClick(deputy)}
+                      <svg 
+                        width="17" 
+                        height="17" 
+                        viewBox="0 0 17 17" 
+                        fill="none" 
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{
+                          transform: openGroups[group] ? 'rotate(180deg)' : 'rotate(0deg)',
+                          transition: 'transform 0.3s ease',
+                          marginLeft: 'auto',
+                          marginRight: '12px'
+                        }}
                       >
-                        <div className="drawerUnGroupeBlocDeputeFlex">
-                          <div className="drawerUnGroupeBlocDeputeFlexDeux">
-                            <img
-                              src={deputy.mep_image || 'default-image-url.jpg'}
-                              alt={`${deputy.givenName} ${deputy.familyName}`}
-                            />
-                            <div>
-                              <h4>{deputy.givenName} {deputy.familyName}</h4>
-                              <p>{deputy.mep_gender === 'masculin' ? 'Député' : 'Députée'}</p>
+                        <path d="M13.8125 6.375L8.5 11.6875L3.1875 6.375" stroke="white" strokeWidth="0.796875" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    {openGroups[group] && (
+                      <div>
+                        {groupedDeputies[group].map((deputy, deputyIndex) => (
+                          <div
+                            key={deputyIndex}
+                            className="drawerUnGroupeBlocDepute"
+                            onClick={() => handleDeputyClick(deputy)}
+                          >
+                            <div className="drawerUnGroupeBlocDeputeFlex">
+                              <div className="drawerUnGroupeBlocDeputeFlexDeux">
+                                <img
+                                  src={deputy.mep_image || 'default-image-url.jpg'}
+                                  alt={`${deputy.givenName} ${deputy.familyName}`}
+                                />
+                                <div>
+                                  <h4>{deputy.givenName} {deputy.familyName}</h4>
+                                  <p>{deputy.mep_gender === 'masculin' ? 'Député' : 'Députée'}</p>
+                                </div>
+                              </div>
+                              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5.625 2.8125L10.3125 7.5L5.625 12.1875" stroke="black" stroke-width="0.9375" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
                             </div>
                           </div>
-                          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5.625 2.8125L10.3125 7.5L5.625 12.1875" stroke="black" stroke-width="0.9375" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
                   </div>
-
-                </div>
 
             ))}
           </div>
