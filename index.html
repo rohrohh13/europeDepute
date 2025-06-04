@@ -17,15 +17,24 @@
 <script src="//embed.typeform.com/next/embed.js"></script>
 <link rel="stylesheet" href="//embed.typeform.com/next/css/popup.css">
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+  function initializeTypeform() {
     const { open, close, toggle, refresh } = window.tf.createPopup('rgVQ4Oju');
     const trigger = document.querySelector('.footerDeux');
     if (trigger) {
       trigger.onclick = toggle;
     } else {
       console.warn("Aucun élément avec la classe .footerDeux trouvé.");
+      // Réessayer après un court délai
+      setTimeout(initializeTypeform, 1000);
     }
-  });
+  }
+
+  // Attendre que le DOM soit complètement chargé
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeTypeform);
+  } else {
+    initializeTypeform();
+  }
 </script>
 
 </html>
