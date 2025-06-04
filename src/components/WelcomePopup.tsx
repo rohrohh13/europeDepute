@@ -71,7 +71,6 @@ interface WelcomePopupProps {
 
 const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const slides = [
     {
@@ -173,7 +172,7 @@ const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
           navigation
           pagination={{ 
             clickable: true,
-            renderBullet: function (index, className) {
+            renderBullet: function (_index: number, className: string) {
               return '<span class="' + className + '"></span>';
             },
           }}
