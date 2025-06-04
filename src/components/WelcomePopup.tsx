@@ -7,8 +7,6 @@ import {
   IconButton,
   Box,
   Typography,
-  useTheme,
-  useMediaQuery,
 } from '@mui/material';
 // @ts-ignore
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -70,8 +68,6 @@ interface WelcomePopupProps {
 }
 
 const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
-  const theme = useTheme();
-
   const slides = [
     {
       logo: '/logo-datack-map.png',
