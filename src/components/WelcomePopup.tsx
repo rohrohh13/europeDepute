@@ -7,6 +7,8 @@ import {
   IconButton,
   Box,
   Typography,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 // @ts-ignore
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -39,25 +41,7 @@ const styles = `
   }
   .swiper-button-next,
   .swiper-button-prev {
-    width: 23px !important;
-    height: 23px !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    background-size: contain !important;
-    cursor: pointer !important;
-  }
-  .swiper-button-disabled {
-    opacity: 0.35 !important;
-    cursor: pointer !important;
-    pointer-events: auto !important;
-  }
-  .swiper-button-next {
-    right: 20px !important;
-    background-image: url("data:image/svg+xml,%3Csvg width='23' height='23' viewBox='0 0 23 23' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8.625 4.3125L15.8125 11.5L8.625 18.6875' stroke='white' stroke-width='1.07813' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
-  }
-  .swiper-button-prev {
-    left: 20px !important;
-    background-image: url("data:image/svg+xml,%3Csvg width='23' height='23' viewBox='0 0 23 23' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M14.375 18.6875L7.1875 11.5L14.375 4.3125' stroke='white' stroke-width='1.07813' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+    display: none !important;
   }
   .swiper-button-next::after,
   .swiper-button-prev::after {
@@ -76,6 +60,9 @@ interface WelcomePopupProps {
 }
 
 const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down(992));
+
   const slides = [
     {
       logo: '/logo-datack-map.png',
@@ -136,9 +123,9 @@ const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
           overflow: 'hidden',
           zIndex: 9999,
           width: '610px',
-          height: '520px',
+          height: isMobile ? '474px' : '520px',
           maxWidth: '610px',
-          maxHeight: '520px',
+          maxHeight: isMobile ? '474px' : '520px',
         },
       }}
       sx={{
@@ -173,7 +160,7 @@ const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
       <DialogContent sx={{ p: 0, overflow: 'hidden', zIndex: 9999 }}>
         <Swiper
           modules={[Navigation, Pagination]}
-          navigation
+          navigation={false}
           pagination={{ 
             clickable: true,
             renderBullet: function (_index: number, className: string) {
@@ -224,7 +211,7 @@ const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
                     alt="Logo"
                     sx={{
                       width: 'auto',
-                      height: '27px',
+                      height: isMobile ? '25px' : '27px',
                       marginBottom: 0,
                     }}
                   />
@@ -236,12 +223,12 @@ const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
                     sx={{ 
                       color: '#FFF',
                       fontFamily: 'Inter',
-                      fontSize: '30px',
+                      fontSize: isMobile ? '24px' : '30px',
                       fontStyle: 'normal',
                       fontWeight: 400,
                       lineHeight: '120%',
                       margin: 0,
-                      paddingBottom: '38px',
+                      paddingBottom: isMobile ? '34px' : '38px',
                       textAlign: 'center',
                       leadingTrim: 'both',
                       textEdge: 'cap',
@@ -257,12 +244,12 @@ const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
                     sx={{ 
                       color: '#FFF',
                       fontFamily: 'Inter',
-                      fontSize: '30px',
+                      fontSize: isMobile ? '24px' : '30px',
                       fontStyle: 'normal',
                       fontWeight: 400,
                       lineHeight: '120%',
                       margin: 0,
-                      paddingBottom: '38px',
+                      paddingBottom: isMobile ? '34px' : '38px',
                       textAlign: 'center',
                       leadingTrim: 'both',
                       textEdge: 'cap',
@@ -277,7 +264,7 @@ const WelcomePopup = ({ open, onClose }: WelcomePopupProps) => {
                   src={slide.image}
                   alt="Slide image"
                   sx={{
-                    width: '409px',
+                    width: isMobile ? '100%' : '409px',
                     height: 'auto',
                     objectFit: 'cover',
                     borderRadius: '15px',
